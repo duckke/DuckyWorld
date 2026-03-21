@@ -46,10 +46,18 @@ DuckyWorld/              ← Unity 게임 프로젝트 루트
 - 파일명은 **영문**으로만 작성
 
 ## Claude Code 환경 동기화 규칙
-- 프롬프트에 `[AUTO-SYNC]` 메시지가 주입된 경우 → 사용자에게 settings.json 변경 내용을 커밋할지 물어볼 것
+
+**[AUTO-SYNC] 주입 시** — 로컬 설정이 변경됨
+- 사용자에게 커밋 여부를 물어볼 것
 - 동의 시: `/tmp/claude_pending_push.json` 내용을 `.claude/skills/claude/settings.json`에 저장 → 커밋 & 푸시 → `/tmp/claude_pending_push.json` 삭제
 - 거부 시: `/tmp/claude_pending_push.json` 삭제
-- 다른 기기에서 세팅 맞출 때 → `git pull` 후 "클로드 코드 동기화" 요청
+
+**[AUTO-APPLY] 주입 시** — 리포지토리 설정이 로컬과 다름 (git pull 후 등)
+- 사용자에게 새로운 설정을 적용할지 물어볼 것
+- 동의 시: `bash .claude/skills/claude/sync.sh` 실행
+- 거부 시: 아무것도 하지 않음
+
+- 다른 기기에서 세팅 맞출 때 → `git pull` 후 자동 감지됨 (직접 요청 불필요)
 
 ## 스킬/에이전트 구조 규칙
 - **Skill = 사용자 요청의 진입점** / **Agent = 역할 정의 (재사용 가능)**
