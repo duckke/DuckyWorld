@@ -15,7 +15,8 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
 └── .claude/
     ├── skills/          ← 프로젝트 전용 스킬들
     │   ├── git-commit/
-    │   └── minigame-design/
+    │   ├── minigame-design/
+    │   └── notion-sync/ ← md ↔ Notion 동기화 (notion_map.json 포함)
     ├── agents/          ← 독립적 에이전트들
     │   ├── design/      ← 크리(감성/재미) + 로직(밸런스/구현)
     │   └── develop/     ← 리뷰어, 리팩터, 코더
@@ -38,6 +39,7 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
 ## 작업 규칙
 - 사용자와의 대화는 항상 **한글**로
 - 기획 내용이 추가/변경되면 관련 `.claude/docs/duckyworld/` 내 md 파일을 **즉시 업데이트**
+- **md 파일 수정 후 "노션도 동기화할까요?" 라고 물어볼 것** — notion-sync 스킬 사용
 - 새 미니게임 기획 시 `.claude/docs/duckyworld/minigames/_template.md` 기반으로 작성
 - 새 미니게임 추가 시 `.claude/docs/duckyworld.md` 미니게임 목록 업데이트
 - 파일명은 **영문**으로만 작성
