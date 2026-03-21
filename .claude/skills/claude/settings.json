@@ -1,7 +1,7 @@
 {
   "statusLine": {
     "type": "command",
-    "command": "bash /Users/duck/.claude/statusline-command.sh"
+    "command": "bash ~/.claude/statusline-command.sh"
   },
   "hooks": {
     "SessionStart": [
@@ -20,8 +20,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/duck/Documents/ClaudeTest/.claude/skills/claude/check-changes.sh 2>/dev/null || true",
+            "command": "bash __SKILL_DIR__/check-changes.sh 2>/dev/null || true",
             "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __SKILL_DIR__/prompt-inject.sh 2>/dev/null || true"
           }
         ]
       }

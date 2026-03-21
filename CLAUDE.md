@@ -10,7 +10,7 @@
 
 ## 폴더 구조
 ```
-ClaudeTest/              ← Unity 게임 프로젝트 루트
+DuckyWorld/              ← Unity 게임 프로젝트 루트
 ├── CLAUDE.md            ← Claude Code 지시 파일 (루트 고정)
 └── .claude/
     ├── skills/          ← 프로젝트 전용 스킬들
@@ -46,9 +46,9 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
 - 파일명은 **영문**으로만 작성
 
 ## Claude Code 환경 동기화 규칙
-- 세션 시작 시 `/tmp/claude_pending_push.json` 파일이 있으면 → 변경 내용을 사용자에게 보여주고 커밋할지 물어볼 것
-- 동의 시: `~/.claude/settings.json`을 `.claude/skills/claude/settings.json`에 복사 → 커밋 & 푸시 → 파일 삭제
-- 거부 시: 파일만 삭제
+- 프롬프트에 `[AUTO-SYNC]` 메시지가 주입된 경우 → 사용자에게 settings.json 변경 내용을 커밋할지 물어볼 것
+- 동의 시: `/tmp/claude_pending_push.json` 내용을 `.claude/skills/claude/settings.json`에 저장 → 커밋 & 푸시 → `/tmp/claude_pending_push.json` 삭제
+- 거부 시: `/tmp/claude_pending_push.json` 삭제
 - 다른 기기에서 세팅 맞출 때 → `git pull` 후 "클로드 코드 동기화" 요청
 
 ## 스킬/에이전트 구조 규칙

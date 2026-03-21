@@ -15,8 +15,9 @@ bash .claude/skills/claude/sync.sh
 
 ## 설정 변경 알림
 
-- 세션 종료 시 `~/.claude/settings.json` 변경 자동 감지
-- 변경 있으면 `/tmp/claude_pending_push.json` 생성
-- **다음 세션 시작 시 이 파일이 있으면 사용자에게 변경 내용을 보여주고 커밋할지 물어볼 것**
-- 동의 시: `settings.json`을 `.claude/skills/claude/settings.json`에 복사 → 커밋 & 푸시 → `/tmp/claude_pending_push.json` 삭제
+- 응답 완료 시마다 Stop 훅 → `check-changes.sh`가 `~/.claude/settings.json` 변경 감지
+- 변경 있으면 정규화된 내용을 `/tmp/claude_pending_push.json`에 저장
+- 다음 메시지 수신 시 UserPromptSubmit 훅 → `prompt-inject.sh`가 `[AUTO-SYNC]` 알림 자동 주입
+- Claude가 알림을 보고 **사용자에게 커밋 여부를 물어볼 것**
+- 동의 시: `/tmp/claude_pending_push.json` 내용 → `.claude/skills/claude/settings.json` 저장 → 커밋 & 푸시 → 파일 삭제
 - 거부 시: `/tmp/claude_pending_push.json` 삭제
