@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/Documents/ClaudeTest/.claude/skills/etc/claude-code-sync/auto-push.sh 2>/dev/null || true",
+            "command": "bash ~/Documents/ClaudeTest/.claude/skills/claude/check-changes.sh 2>/dev/null || true",
             "async": true
           }
         ]

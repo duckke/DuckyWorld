@@ -17,8 +17,7 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
     │   ├── git-commit/
     │   ├── minigame-design/
     │   ├── notion-sync/ ← md ↔ Notion 동기화 (notion_map.json 포함)
-    │   └── etc/
-    │       └── claude-code-sync/ ← Claude Code 환경 동기화 (statusline, settings 정본)
+    │   └── claude/      ← Claude Code 환경 설정 정본 및 동기화 스크립트
     ├── agents/          ← 독립적 에이전트들
     │   ├── design/      ← 크리(감성/재미) + 로직(밸런스/구현)
     │   └── develop/     ← 리뷰어, 리팩터, 코더
@@ -47,9 +46,10 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
 - 파일명은 **영문**으로만 작성
 
 ## Claude Code 환경 동기화 규칙
-- 설정 변경 시 세션 종료 시 자동 감지하여 커밋 & 푸시 (Stop 훅)
-- 다른 기기에서 세팅 맞출 때 → `git pull` 후 "클로드 코드 동기화" 요청 (claude-code-sync 스킬)
-- `.claude/skills/etc/claude-code-sync/` 안의 파일이 **정본**
+- 세션 시작 시 `/tmp/claude_pending_push.json` 파일이 있으면 → 변경 내용을 사용자에게 보여주고 커밋할지 물어볼 것
+- 동의 시: `~/.claude/settings.json`을 `.claude/skills/claude/settings.json`에 복사 → 커밋 & 푸시 → 파일 삭제
+- 거부 시: 파일만 삭제
+- 다른 기기에서 세팅 맞출 때 → `git pull` 후 "클로드 코드 동기화" 요청
 
 ## 스킬/에이전트 구조 규칙
 - **Skill = 사용자 요청의 진입점** / **Agent = 역할 정의 (재사용 가능)**
