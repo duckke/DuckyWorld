@@ -47,9 +47,9 @@ ClaudeTest/              ← Unity 게임 프로젝트 루트
 - 파일명은 **영문**으로만 작성
 
 ## Claude Code 환경 동기화 규칙
-- `~/.claude/settings.json` 또는 `~/.claude/statusline-command.sh` 수정 시 → **즉시 프로젝트에 반영 후 커밋 & 푸시** (claude-code-sync 스킬)
+- 설정 변경 시 세션 종료 시 자동 감지하여 커밋 & 푸시 (Stop 훅)
 - 다른 기기에서 세팅 맞출 때 → `git pull` 후 "클로드 코드 동기화" 요청 (claude-code-sync 스킬)
-- `.claude/skills/etc/claude-code-sync/` 안의 파일이 **정본** — 기기 로컬 설정의 원본
+- `.claude/skills/etc/claude-code-sync/` 안의 파일이 **정본**
 
 ## 스킬/에이전트 구조 규칙
 - **Skill = 사용자 요청의 진입점** / **Agent = 역할 정의 (재사용 가능)**
