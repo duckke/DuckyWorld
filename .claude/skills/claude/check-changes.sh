@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Stop 훅 - settings.json 변경 감지 후 pending 파일 생성
 
-PROJ_SETTINGS="${HOME}/Documents/ClaudeTest/.claude/skills/claude/settings.json"
+PROJ_SETTINGS="$(cd "$(dirname "$0")" && pwd)/settings.json"
 
 normalize() { sed "s|${HOME}/|~/|g"; }
 

@@ -13,8 +13,8 @@ if ! command -v jq &>/dev/null; then
   brew install jq
 fi
 
-# settings.json 적용 (~/를 실제 경로로 치환, 기존 설정과 병합)
-SETTINGS_JSON=$(sed "s|~/|${HOME}/|g" "$SKILL_DIR/settings.json")
+# settings.json 적용 (__SKILL_DIR__ 및 ~/ 치환 후 기존 설정과 병합)
+SETTINGS_JSON=$(sed "s|__SKILL_DIR__|${SKILL_DIR}|g; s|~/|${HOME}/|g" "$SKILL_DIR/settings.json")
 if [ -f ~/.claude/settings.json ]; then
   echo "$SETTINGS_JSON" | jq --slurpfile cur ~/.claude/settings.json '($cur[0] // {}) * .' > /tmp/claude_settings_tmp.json
   mv /tmp/claude_settings_tmp.json ~/.claude/settings.json

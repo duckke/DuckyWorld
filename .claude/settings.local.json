@@ -63,7 +63,10 @@
       "Bash(jq '.hooks.Stop = [{\"\"hooks\"\": [{\"\"type\"\": \"\"command\"\", \"\"command\"\": \"\"bash ~/Documents/ClaudeTest/.claude/skills/etc/claude-code-sync/auto-push.sh 2>/dev/null || true\"\", \"\"async\"\": true}]}]' ~/.claude/settings.json)",
       "Bash(mv /tmp/settings_tmp.json ~/.claude/settings.json)",
       "Bash(rm -rf /Users/duck/Documents/ClaudeTest/.claude/skills/etc)",
-      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/.claude/skills/claude)"
+      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/.claude/skills/claude)",
+      "Bash(SKILL_DIR=/Users/duck/Documents/ClaudeTest/.claude/skills/claude)",
+      "Read(//Users/duck/Documents/ClaudeTest/**)",
+      "Bash(mv /tmp/s.json ~/.claude/settings.json)"
     ]
   }
 }
