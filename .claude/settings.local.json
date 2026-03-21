@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:share.google)",
+      "WebFetch(domain:www.google.com)",
+      "WebFetch(domain:www.reddit.com)",
+      "WebSearch",
+      "Bash(claude --version)",
+      "Bash(ls ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/*/skills/ 2>/dev/null | grep -v \"^$\")",
+      "Bash(which claude && npm list -g @anthropic-ai/claude-code 2>/dev/null || echo \"not npm\")",
+      "Bash(claude config list 2>/dev/null || echo \"no config\")",
+      "Bash(curl -fsSL https://claude.ai/install.sh | bash)",
+      "Bash(npm uninstall -g @anthropic-ai/claude-code)",
+      "Bash(cp -r \"/Users/duck/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/\"*\"/skills/skill-creator\" ~/.claude/skills/)",
+      "Bash(python3 -c \":*)",
+      "Read(//tmp/**)",
+      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/.claude/skills && cp -r /Users/duck/.claude/skills/minigame-design /Users/duck/Documents/ClaudeTest/.claude/skills/ && rm -rf /Users/duck/.claude/skills/minigame-design)",
+      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/temp && cp -r /Users/duck/.claude/projects/-Users-duck-Documents-ClaudeTest/memory/* /Users/duck/Documents/ClaudeTest/temp/)",
+      "Bash(git status:*)",
+      "Bash(brew install:*)",
+      "Bash(git init:*)"
+    ]
+  }
+}
