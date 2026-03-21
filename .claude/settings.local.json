@@ -18,7 +18,17 @@
       "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/temp && cp -r /Users/duck/.claude/projects/-Users-duck-Documents-ClaudeTest/memory/* /Users/duck/Documents/ClaudeTest/temp/)",
       "Bash(git status:*)",
       "Bash(brew install:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(gh repo:*)",
+      "Bash(gh auth:*)",
+      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/.claude/agents && mv /Users/duck/Documents/ClaudeTest/.claude/skills/git-commit/git-manager-agent.md /Users/duck/Documents/ClaudeTest/.claude/agents/)",
+      "Bash(mkdir -p /Users/duck/Documents/ClaudeTest/.claude/skills/git/subskills/commit && mv /Users/duck/Documents/ClaudeTest/.claude/skills/git-commit/SKILL.md /Users/duck/Documents/ClaudeTest/.claude/skills/git/subskills/commit/ && mv /Users/duck/Documents/ClaudeTest/.claude/skills/git-commit /Users/duck/Documents/ClaudeTest/.claude/skills/git-commit-old 2>/dev/null; rm -rf /Users/duck/Documents/ClaudeTest/.claude/skills/git-commit)",
+      "Bash(find /Users/duck/Documents/ClaudeTest/.claude/skills -name \"README.md\" -delete)",
+      "Bash(cp /Users/duck/Documents/ClaudeTest/.claude/minigames/_template.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/_template.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/01_thump_thump_slope.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/01_thump_thump_slope.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/02_flap_flap.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/02_flap_flap.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/03_waddle_sprint.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/03_waddle_sprint.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/04_hoppy_forest.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/04_hoppy_forest.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/05_slide_run.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/05_slide_run.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/06_narrow_path.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/06_narrow_path.md && cp /Users/duck/Documents/ClaudeTest/.claude/minigames/07_villain_dodge.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/07_villain_dodge.md && cp /Users/duck/Documents/ClaudeTest/.claude/docs/minigame_improvements.md /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/minigames/improvements.md)",
+      "Bash(rm -rf /Users/duck/Documents/ClaudeTest/.claude/docs/duckyworld/overview && rm /Users/duck/Documents/ClaudeTest/.claude/docs/tech_architecture.md && rm /Users/duck/Documents/ClaudeTest/.claude/docs/economy_system.md && rm /Users/duck/Documents/ClaudeTest/.claude/docs/minigame_improvements.md && rm -rf /Users/duck/Documents/ClaudeTest/.claude/minigames)",
+      "Bash(rm -rf /Users/duck/Documents/ClaudeTest/.claude/skills/git && rm -f /Users/duck/Documents/ClaudeTest/.claude/agents/git/manager.md && rmdir /Users/duck/Documents/ClaudeTest/.claude/agents/git 2>/dev/null; echo \"done\")",
+      "Bash(for f:*)",
+      "Bash(git add:*)"
     ]
   }
 }
