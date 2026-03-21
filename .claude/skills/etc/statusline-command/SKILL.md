@@ -19,22 +19,35 @@ cp .claude/skills/etc/statusline-command/statusline-command.sh ~/.claude/statusl
 
 ### 2. 현재 유저명으로 settings.json 업데이트
 
+`whoami`로 유저명을 확인한 뒤, **반드시 절대경로**로 command를 설정한다.
+
 ```bash
-whoami  # 유저명 확인
+# 기존 settings.json에 statusLine 블록이 있으면 절대경로로 교체
+sed -i '' "s|bash ~/.claude/statusline-command.sh|bash /Users/$(whoami)/.claude/statusline-command.sh|" ~/.claude/settings.json
 ```
 
-`~/.claude/settings.json`을 읽어 `statusLine` 블록을 추가하거나 덮어쓴다.
-`command` 경로의 유저명은 `whoami` 결과값으로 자동 치환한다:
+settings.json에 statusLine 블록이 없으면 jq로 추가한다:
 
-```json
-"statusLine": {
-  "type": "command",
-  "command": "bash /Users/CURRENT_USERNAME/.claude/statusline-command.sh"
-}
+```bash
+USERNAME=$(whoami)
+jq --arg cmd "bash /Users/$USERNAME/.claude/statusline-command.sh" \
+  '.statusLine = {"type": "command", "command": $cmd}' \
+  ~/.claude/settings.json > /tmp/settings_tmp.json && mv /tmp/settings_tmp.json ~/.claude/settings.json
 ```
 
-- `settings.json`이 이미 있으면 `statusLine` 블록만 병합 (나머지 설정 유지)
-- `settings.json`이 없으면 새로 생성
+- `~/.claude/...` 상대경로는 동작하지 않으므로 반드시 절대경로 사용
+- `settings.json`이 없으면 새로 생성:
+  ```bash
+  echo "{\"statusLine\":{\"type\":\"command\",\"command\":\"bash /Users/$(whoami)/.claude/statusline-command.sh\"}}" > ~/.claude/settings.json
+  ```
+
+### 2-1. 적용 확인
+
+```bash
+cat ~/.claude/settings.json | grep command
+```
+
+`/Users/실제유저명/.claude/statusline-command.sh` 형태로 절대경로가 들어있는지 확인한다.
 
 ### 3. 완료 안내
 
