@@ -14,11 +14,12 @@ rate_week_resets_at=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at //
 output=""
 
 # Return ANSI color code based on used_percentage
+# 0-49: white, 50-65: yellow, 65-80: orange, 80+: red
 gauge_color() {
   local pct=$1
-  if [ "$(echo "$pct >= 90" | bc -l)" -eq 1 ]; then
+  if [ "$(echo "$pct >= 80" | bc -l)" -eq 1 ]; then
     printf '\033[31m'        # red
-  elif [ "$(echo "$pct >= 75" | bc -l)" -eq 1 ]; then
+  elif [ "$(echo "$pct >= 65" | bc -l)" -eq 1 ]; then
     printf '\033[38;5;208m'  # orange
   elif [ "$(echo "$pct >= 50" | bc -l)" -eq 1 ]; then
     printf '\033[33m'        # yellow
