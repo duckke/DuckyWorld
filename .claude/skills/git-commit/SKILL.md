@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Git 커밋 스킬. "커밋해줘", "깃에 올려줘", "변경사항 커밋", "git commit" 등 요청 시 트리거.
+description: 변경사항을 규칙에 맞춰 커밋하고 푸시한다.
 ---
 
 # Git Commit

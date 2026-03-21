@@ -1,6 +1,6 @@
 ---
 name: claude-code-sync
-description: 클로드 코드 동기화. "클로드 코드 동기화", "새 기기 설정" 등 요청 시 트리거.
+description: 클로드 코드 설정을 기기 간 동기화한다.
 ---
 
 # Claude Code 동기화
