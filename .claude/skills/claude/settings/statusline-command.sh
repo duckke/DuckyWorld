@@ -36,7 +36,7 @@ gauge_color() {
 
 # Model name
 if [ -n "$model" ]; then
-  output="${output} • $(printf "🤖 [\033[1m%s\033[0m]" "$model")"
+  output="${output} │ $(printf "🤖 [\033[1m%s\033[0m]" "$model")"
 fi
 
 # Context bar + percentages
@@ -61,7 +61,7 @@ if [ -n "$used" ]; then
 
   ctx_part=$(printf "🧠 ${bold}CONTEXT:${reset} %b ${bold}%s%%${reset}" "$bar" "$pct")
 
-  [ -n "$output" ] && output="${output} • " || output=""
+  [ -n "$output" ] && output="${output} │ " || output=""
   output="${output}${ctx_part}"
 fi
 
@@ -102,7 +102,7 @@ if [ -n "$rate_five" ]; then
     fi
   fi
 
-  output="${output} • ${rate_part}"
+  output="${output} │ ${rate_part}"
 fi
 
 # Weekly rate limit (7-day), only when present
@@ -145,14 +145,14 @@ if [ -n "$rate_week" ]; then
     fi
   fi
 
-  output="${output} • ${week_part}"
+  output="${output} │ ${week_part}"
 fi
 
 # Last call token info (rightmost)
 if [ -n "$cur_in" ] && [ -n "$cur_out" ]; then
   bold='\033[1m'
   reset='\033[0m'
-  output="${output} • $(printf "💬 ${bold}LAST:${reset}") ↑${cur_in} ↓${cur_out}"
+  output="${output} │ $(printf "💬 ${bold}LAST:${reset}") ↑${cur_in} ↓${cur_out}"
 fi
 
 [ -n "$output" ] && printf "%b" "$output"
