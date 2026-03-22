@@ -7,7 +7,19 @@ SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SKILL_DIR/../../.." && pwd)"
 SETTINGS="$SKILL_DIR/settings"
 
-echo "🔄 Claude Code 환경 동기화 중..."
+# lock 파일 생성 (sync 실행 중 표시)
+echo $$ > /tmp/claude_sync_running.txt
+trap 'rm -f /tmp/claude_sync_running.txt' EXIT
+
+# 버전 비교 (완료 메시지 판단용)
+SETTINGS_VER=$(cat "$SETTINGS/settings.version.json" 2>/dev/null || echo "0")
+LOCAL_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "0")
+ver_gt() { [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ] && [ "$1" != "$2" ]; }
+if ver_gt "$SETTINGS_VER" "$LOCAL_VER"; then
+  HAS_UPDATE=1
+else
+  HAS_UPDATE=0
+fi
 
 # jq 설치 확인
 if ! command -v jq &>/dev/null; then
@@ -51,15 +63,13 @@ SETTINGS="\$SKILL_DIR/settings"
 ver_gt() { [ "\$(printf '%s\n' "\$1" "\$2" | sort -V | tail -1)" = "\$1" ] && [ "\$1" != "\$2" ]; }
 
 SETTINGS_VER=\$(cat "\$SETTINGS/settings.version.json" 2>/dev/null || echo "0")
-LOCAL_VER=\$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
+LOCAL_VER=\$(cat ~/.claude/settings.version.json 2>/dev/null || echo "0")
 
 if ver_gt "\$SETTINGS_VER" "\$LOCAL_VER"; then
-  echo "🔄 Claude 설정 업데이트 감지 (v\${LOCAL_VER} → v\${SETTINGS_VER}), 적용 중..."
   bash "\$SKILL_DIR/sync.sh"
 fi
 HOOK
 chmod +x "$HOOK_FILE"
-echo "✅ post-merge 훅 설치 완료"
 
 # crontab 적용 (settings/crontab 기반)
 CRONTAB_FILE="$SETTINGS/crontab"
@@ -74,7 +84,6 @@ if [ -f "$CRONTAB_FILE" ]; then
 ${MANAGED}
 # END claude-managed"
   echo "$NEW_CRONTAB" | grep -v '^$' | crontab -
-  echo "✅ crontab 적용 완료"
 fi
 
 # Claude Code 최신화 (nvm 환경)
@@ -85,4 +94,9 @@ if [ -n "$NVM_CLAUDE" ] && [ -L "$LOCAL_CLAUDE" ]; then
 fi
 claude update 2>/dev/null || true
 
-echo "✨ 완료! Claude Code를 재시작해주세요."
+# 완료 메시지
+if [ "$HAS_UPDATE" -eq 1 ]; then
+  echo "클로드 설정값을 최신화 했어요!"
+else
+  echo "클로드 설정값이 최신 버전입니다."
+fi

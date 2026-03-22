@@ -28,8 +28,13 @@ if [ -f /tmp/claude_pending_push.txt ]; then
 fi
 
 # Case 2: settings/ 버전이 로컬보다 높음 → 즉시 적용
+# sync.sh 실행 중이면 버전 비교 건너뜀 (lock 파일 확인)
+if [ -f /tmp/claude_sync_running.txt ]; then
+  exit 0
+fi
+
 SETTINGS_VER=$(cat "$SETTINGS/settings.version.json" 2>/dev/null || echo "0")
-LOCAL_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
+LOCAL_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "0")
 
 if ver_gt "$SETTINGS_VER" "$LOCAL_VER"; then
   bash "$SKILL_DIR/sync.sh" 2>/dev/null
