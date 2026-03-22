@@ -40,7 +40,19 @@ if [ -f ~/.claude/keybindings.json ]; then
   fi
 fi
 
-# ── 4. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
+# ── 4. crontab 비교 ──────────────────────────────────────────────────────
+
+if [ -f "$SETTINGS/crontab" ]; then
+  CURRENT_CRON=$(crontab -l 2>/dev/null | awk '/# BEGIN claude-managed/{found=1; next} /# END claude-managed/{found=0} found' | grep -v '^#' | grep -v '^$' || true)
+  SAVED_CRON=$(grep -v '^#' "$SETTINGS/crontab" | grep -v '^$' || true)
+  if [ "$CURRENT_CRON" != "$SAVED_CRON" ]; then
+    CHANGED=true
+    # 현재 관리 블록을 settings/crontab에 반영
+    crontab -l 2>/dev/null | awk '/# BEGIN claude-managed/{found=1; next} /# END claude-managed/{found=0} found' > "$SETTINGS/crontab"
+  fi
+fi
+
+# ── 5. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
 
 if [ "$CHANGED" = true ]; then
   CUR_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "1.0.0")

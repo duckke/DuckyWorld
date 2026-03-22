@@ -51,6 +51,22 @@ HOOK
 chmod +x "$HOOK_FILE"
 echo "✅ post-merge 훅 설치 완료"
 
+# crontab 적용 (settings/crontab 기반)
+CRONTAB_FILE="$SETTINGS/crontab"
+if [ -f "$CRONTAB_FILE" ]; then
+  MANAGED=$(sed "s|__SKILL_DIR__|${SKILL_DIR}|g; s|~/|${HOME}/|g" "$CRONTAB_FILE")
+  CURRENT=$(crontab -l 2>/dev/null || true)
+  # 기존 관리 블록 제거
+  CLEANED=$(echo "$CURRENT" | awk '/# BEGIN claude-managed/{found=1} /# END claude-managed/{found=0; next} !found')
+  # 새 블록 추가
+  NEW_CRONTAB="${CLEANED}
+# BEGIN claude-managed
+${MANAGED}
+# END claude-managed"
+  echo "$NEW_CRONTAB" | grep -v '^$' | crontab -
+  echo "✅ crontab 적용 완료"
+fi
+
 # Claude Code 최신화 (nvm 환경)
 NVM_CLAUDE=$(find "${HOME}/.nvm/versions" -name "claude" -path "*/bin/claude" 2>/dev/null | sort -V | tail -1)
 LOCAL_CLAUDE="${HOME}/.local/bin/claude"
