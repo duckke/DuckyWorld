@@ -12,7 +12,7 @@ normalize() {
   sed "s|${SKILL_DIR}|__SKILL_DIR__|g; s|${HOME}/|~/|g"
 }
 
-CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S 'del(.model)' 2>/dev/null || echo "")
+CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S 'del(.model, .statusLine)' 2>/dev/null || echo "")
 SAVED=$(jq -S . "$PROJ_SETTINGS" 2>/dev/null || echo "")
 
 if [ "$CURRENT" != "$SAVED" ]; then
