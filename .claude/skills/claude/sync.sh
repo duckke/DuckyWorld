@@ -5,7 +5,7 @@ set -e
 
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SKILL_DIR/../../.." && pwd)"
-MIRROR="$SKILL_DIR/mirror"
+SETTINGS="$SKILL_DIR/settings"
 
 echo "🔄 Claude Code 환경 동기화 중..."
 
@@ -16,7 +16,7 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # settings.json 적용 (__SKILL_DIR__ 및 ~/ 치환 후 기존 설정과 병합)
-SETTINGS_JSON=$(sed "s|__SKILL_DIR__|${SKILL_DIR}|g; s|~/|${HOME}/|g" "$MIRROR/settings.json")
+SETTINGS_JSON=$(sed "s|__SKILL_DIR__|${SKILL_DIR}|g; s|~/|${HOME}/|g" "$SETTINGS/settings.json")
 if [ -f ~/.claude/settings.json ]; then
   echo "$SETTINGS_JSON" | jq --slurpfile cur ~/.claude/settings.json '($cur[0] // {}) * .' > /tmp/claude_settings_tmp.json
   mv /tmp/claude_settings_tmp.json ~/.claude/settings.json
@@ -24,8 +24,8 @@ else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
 fi
 
-# mirror의 나머지 파일들 복사 (settings.json, settings.version 제외)
-find "$MIRROR" -maxdepth 1 -type f ! -name "settings.json" | while read -r f; do
+# settings/ 의 나머지 파일들 복사 (settings.json 제외)
+find "$SETTINGS" -maxdepth 1 -type f ! -name "settings.json" | while read -r f; do
   cp "$f" ~/.claude/
 done
 
@@ -36,15 +36,15 @@ cat > "$HOOK_FILE" << HOOK
 # git pull 후 Claude Code settings 버전 체크 & 자동 적용
 
 SKILL_DIR="${SKILL_DIR}"
-MIRROR="\$SKILL_DIR/mirror"
+SETTINGS="\$SKILL_DIR/settings"
 
 ver_gt() { [ "\$(printf '%s\n' "\$1" "\$2" | sort -V | tail -1)" = "\$1" ] && [ "\$1" != "\$2" ]; }
 
-MIRROR_VER=\$(cat "\$MIRROR/settings.version" 2>/dev/null || echo "0")
+SETTINGS_VER=\$(cat "\$SETTINGS/settings.version" 2>/dev/null || echo "0")
 LOCAL_VER=\$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
 
-if ver_gt "\$MIRROR_VER" "\$LOCAL_VER"; then
-  echo "🔄 Claude 설정 업데이트 감지 (v\${LOCAL_VER} → v\${MIRROR_VER}), 적용 중..."
+if ver_gt "\$SETTINGS_VER" "\$LOCAL_VER"; then
+  echo "🔄 Claude 설정 업데이트 감지 (v\${LOCAL_VER} → v\${SETTINGS_VER}), 적용 중..."
   bash "\$SKILL_DIR/sync.sh"
 fi
 HOOK

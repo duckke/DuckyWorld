@@ -38,7 +38,18 @@ description: 변경사항을 규칙에 맞춰 커밋하고 푸시한다.
 미니게임. 퍼덕퍼덕. 배경스크롤 및 배치 조정
 기획. 05_slide_run. 슬라이딩 자세 및 배경 연출 확정
 시스템. 경제. 골드 획득량 재조정
+기타. claude sync. 상태창 수정 [v1.0.4]
 ```
+
+### 특수 규칙: Claude 설정 관련 커밋
+
+`.claude/skills/claude/` 또는 `~/.claude/` 관련 변경 커밋 시 **반드시 버전을 메시지 끝에 포함**한다.
+
+```
+기타. claude sync. 상세내용 [v{버전}]
+```
+
+버전은 `~/.claude/settings.version` 또는 `settings/settings.version` 파일에서 확인한다.
 
 ## 워크플로우
 

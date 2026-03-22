@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Stop 훅 - ~/.claude/ 변경 감지 → 버전 올려서 mirror 갱신 후 pending 저장
+# Stop 훅 - ~/.claude/ 변경 감지 → 버전 올려서 settings/ 갱신 후 pending 저장
 
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
-MIRROR="$SKILL_DIR/mirror"
+SETTINGS="$SKILL_DIR/settings"
 
 command -v jq &>/dev/null || exit 0
 
@@ -12,10 +12,10 @@ normalize() {
 
 CHANGED=false
 
-# ── 1. settings.json 비교 ─────────────────────────────────────────────────
+# ── 1. settings.json 비교 ────────────────────────────────────────────────
 
-CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S 'del(.__version__)' 2>/dev/null || echo "")
-SAVED=$(jq -S '.' "$MIRROR/settings.json" 2>/dev/null || echo "")
+CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S '.' 2>/dev/null || echo "")
+SAVED=$(jq -S '.' "$SETTINGS/settings.json" 2>/dev/null || echo "")
 
 if [ "$CURRENT" != "$SAVED" ]; then
   CHANGED=true
@@ -25,7 +25,7 @@ fi
 
 while IFS= read -r -d '' local_file; do
   filename="$(basename "$local_file")"
-  repo_file="$MIRROR/$filename"
+  repo_file="$SETTINGS/$filename"
 
   if [ ! -f "$repo_file" ] || ! diff -q "$local_file" "$repo_file" &>/dev/null; then
     CHANGED=true
@@ -35,12 +35,12 @@ done < <(find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -print0)
 # ── 3. keybindings.json 비교 ─────────────────────────────────────────────
 
 if [ -f ~/.claude/keybindings.json ]; then
-  if ! diff -q ~/.claude/keybindings.json "$MIRROR/keybindings.json" &>/dev/null 2>&1; then
+  if ! diff -q ~/.claude/keybindings.json "$SETTINGS/keybindings.json" &>/dev/null 2>&1; then
     CHANGED=true
   fi
 fi
 
-# ── 4. 변경 있으면 버전 올리고 mirror 갱신 ───────────────────────────────
+# ── 4. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
 
 if [ "$CHANGED" = true ]; then
   CUR_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "1.0.0")
@@ -49,19 +49,17 @@ if [ "$CHANGED" = true ]; then
 
   # 버전 파일 갱신
   echo "$NEW_VER" > ~/.claude/settings.version
-  echo "$NEW_VER" > "$MIRROR/settings.version"
+  echo "$NEW_VER" > "$SETTINGS/settings.version"
 
   # settings.json 갱신
-  normalize < ~/.claude/settings.json \
-    | jq -S 'del(.__version__)' \
-    > "$MIRROR/settings.json"
+  normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
 
   # *.sh 파일 갱신
-  find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$MIRROR/" \;
+  find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$SETTINGS/" \;
 
   # keybindings.json 갱신
-  [ -f ~/.claude/keybindings.json ] && cp ~/.claude/keybindings.json "$MIRROR/"
+  [ -f ~/.claude/keybindings.json ] && cp ~/.claude/keybindings.json "$SETTINGS/"
 
-  # pending 마킹 (버전만 기록)
+  # pending 마킹
   echo "$NEW_VER" > /tmp/claude_pending_push.txt
 fi
