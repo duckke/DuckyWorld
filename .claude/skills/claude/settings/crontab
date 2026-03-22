@@ -1,2 +1,1 @@
-# Claude Code 자동 업데이트 - 매일 00시
-0 0 * * * bash __SKILL_DIR__/auto-update.sh
+0 0 * * * bash /Users/duck/Documents/Work/DuckyWorld/.claude/skills/claude/auto-update.sh
