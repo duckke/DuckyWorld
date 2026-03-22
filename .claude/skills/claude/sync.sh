@@ -24,7 +24,7 @@ else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
 fi
 
-# mirror의 나머지 파일들 복사 (settings.json, setting-version 제외)
+# mirror의 나머지 파일들 복사 (settings.json, settings.version 제외)
 find "$MIRROR" -maxdepth 1 -type f ! -name "settings.json" | while read -r f; do
   cp "$f" ~/.claude/
 done
@@ -40,8 +40,8 @@ MIRROR="\$SKILL_DIR/mirror"
 
 ver_gt() { [ "\$(printf '%s\n' "\$1" "\$2" | sort -V | tail -1)" = "\$1" ] && [ "\$1" != "\$2" ]; }
 
-MIRROR_VER=\$(cat "\$MIRROR/setting-version" 2>/dev/null || echo "0")
-LOCAL_VER=\$(cat ~/.claude/setting-version 2>/dev/null || echo "0")
+MIRROR_VER=\$(cat "\$MIRROR/settings.version" 2>/dev/null || echo "0")
+LOCAL_VER=\$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
 
 if ver_gt "\$MIRROR_VER" "\$LOCAL_VER"; then
   echo "🔄 Claude 설정 업데이트 감지 (v\${LOCAL_VER} → v\${MIRROR_VER}), 적용 중..."

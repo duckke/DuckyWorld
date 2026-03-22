@@ -16,8 +16,8 @@ if [ -f /tmp/claude_pending_push.txt ]; then
 fi
 
 # Case 2: 미러 버전이 로컬보다 높음 → 즉시 적용
-MIRROR_VER=$(cat "$MIRROR/setting-version" 2>/dev/null || echo "0")
-LOCAL_VER=$(cat ~/.claude/setting-version 2>/dev/null || echo "0")
+MIRROR_VER=$(cat "$MIRROR/settings.version" 2>/dev/null || echo "0")
+LOCAL_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
 
 if ver_gt "$MIRROR_VER" "$LOCAL_VER"; then
   bash "$SKILL_DIR/sync.sh" 2>/dev/null
