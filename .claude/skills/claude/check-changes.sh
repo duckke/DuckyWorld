@@ -43,13 +43,13 @@ fi
 # ── 4. 변경 있으면 버전 올리고 mirror 갱신 ───────────────────────────────
 
 if [ "$CHANGED" = true ]; then
-  CUR_VER=$(cat ~/.claude/.version 2>/dev/null || echo "1.0.0")
+  CUR_VER=$(cat ~/.claude/setting-version 2>/dev/null || echo "1.0.0")
   PATCH=$(echo "$CUR_VER" | awk -F. '{print $3+1}')
   NEW_VER=$(echo "$CUR_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")
 
   # 버전 파일 갱신
-  echo "$NEW_VER" > ~/.claude/.version
-  echo "$NEW_VER" > "$MIRROR/.version"
+  echo "$NEW_VER" > ~/.claude/setting-version
+  echo "$NEW_VER" > "$MIRROR/setting-version"
 
   # settings.json 갱신
   normalize < ~/.claude/settings.json \
