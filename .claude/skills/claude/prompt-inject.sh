@@ -8,6 +8,14 @@ ver_gt() {
   [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ] && [ "$1" != "$2" ]
 }
 
+# Case 0: Claude Code 업데이트 알림
+if [ -f /tmp/claude_update_notify.txt ]; then
+  VERSIONS=$(cat /tmp/claude_update_notify.txt)
+  rm /tmp/claude_update_notify.txt
+  echo "[UPDATE] Claude Code가 업데이트되었습니다 (v${VERSIONS}). 새 버전을 적용하려면 세션을 재시작하세요."
+  exit 0
+fi
+
 # Case 1: 로컬 변경사항 pending → AUTO-SYNC
 if [ -f /tmp/claude_pending_push.txt ]; then
   NEW_VER=$(cat /tmp/claude_pending_push.txt)
