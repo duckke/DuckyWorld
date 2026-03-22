@@ -6,7 +6,7 @@ Claude Code 환경(스킬, 에이전트, 설정, 훅 스크립트) 관련 작업
 
 - `.claude/skills/` — 스킬 파일 검토/수정
 - `.claude/agents/` — 에이전트 파일 검토/수정
-- `.claude/manager/` — 유틸 에이전트 검토/수정
+- `.claude/agents/common/` — 유틸 에이전트 검토/수정
 - `.claude/skills/claude/settings/` — 동기화 설정
 - `CLAUDE.md` — 프로젝트 지시 파일
 
@@ -18,7 +18,7 @@ Claude Code 환경(스킬, 에이전트, 설정, 훅 스크립트) 관련 작업
 
 ### 검토 + 수정이 필요한 경우
 1. **Explore** → 전체 구조 파악 및 문제점 도출
-2. **Modifier** (`.claude/manager/modifier/prompt.md` 기반, `general-purpose`) → 수정 수행
+2. **Modifier** (`.claude/agents/common/modifier/prompt.md` 기반, `general-purpose`) → 수정 수행
    - 독립적인 파일 수정은 병렬 호출
    - 순서 의존성 있는 경우 순차 실행
 3. 결과 요약 반환
