@@ -8,6 +8,10 @@ ver_gt() {
   [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ] && [ "$1" != "$2" ]
 }
 
+# 파일명 마이그레이션 (settings.version → settings.version.json)
+[ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
+[ -f "$SETTINGS/settings.version.json" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version.json" "$SETTINGS/settings.version.json"
+
 # Case 0: Claude Code 업데이트 알림
 if [ -f /tmp/claude_update_notify.txt ]; then
   VERSIONS=$(cat /tmp/claude_update_notify.txt)
@@ -24,7 +28,7 @@ if [ -f /tmp/claude_pending_push.txt ]; then
 fi
 
 # Case 2: settings/ 버전이 로컬보다 높음 → 즉시 적용
-SETTINGS_VER=$(cat "$SETTINGS/settings.version" 2>/dev/null || echo "0")
+SETTINGS_VER=$(cat "$SETTINGS/settings.version.json" 2>/dev/null || echo "0")
 LOCAL_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
 
 if ver_gt "$SETTINGS_VER" "$LOCAL_VER"; then

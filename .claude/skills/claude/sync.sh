@@ -24,8 +24,12 @@ else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
 fi
 
-# settings/ 의 나머지 파일들 복사 (settings.json 제외)
-find "$SETTINGS" -maxdepth 1 -type f ! -name "settings.json" | while read -r f; do
+# 파일명 마이그레이션 (settings.version → settings.version.json)
+[ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
+[ -f "$SETTINGS/settings.version.json" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version.json" "$SETTINGS/settings.version.json"
+
+# settings/ 의 나머지 파일들 복사 (settings.json, crontab 제외)
+find "$SETTINGS" -maxdepth 1 -type f ! -name "settings.json" ! -name "crontab" | while read -r f; do
   cp "$f" ~/.claude/
 done
 
@@ -40,7 +44,7 @@ SETTINGS="\$SKILL_DIR/settings"
 
 ver_gt() { [ "\$(printf '%s\n' "\$1" "\$2" | sort -V | tail -1)" = "\$1" ] && [ "\$1" != "\$2" ]; }
 
-SETTINGS_VER=\$(cat "\$SETTINGS/settings.version" 2>/dev/null || echo "0")
+SETTINGS_VER=\$(cat "\$SETTINGS/settings.version.json" 2>/dev/null || echo "0")
 LOCAL_VER=\$(cat ~/.claude/settings.version 2>/dev/null || echo "0")
 
 if ver_gt "\$SETTINGS_VER" "\$LOCAL_VER"; then

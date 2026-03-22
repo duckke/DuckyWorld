@@ -19,7 +19,7 @@ description: 클로드 코드 설정을 기기 간 동기화한다.
 ├── SKILL.md
 └── settings/          — ~/.claude/ 동기화 대상 파일 저장소
     ├── settings.json      — ~/.claude/settings.json 미러 (경로 정규화됨)
-    ├── settings.version   — 현재 버전 (예: 1.0.3)
+    ├── settings.version.json   — 현재 버전 (예: 1.0.3)
     ├── statusline-command.sh
     └── (keybindings.json 등 자동 추가됨)
 ```
@@ -37,7 +37,7 @@ description: 클로드 코드 설정을 기기 간 동기화한다.
 
 ```bash
 # 1. 현재 버전 읽기
-CUR_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "1.0.0")
+CUR_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "1.0.0")
 
 # 2. 변경 규모에 따라 버전 결정
 # MAJOR (x.0.0): 동기화 구조, 훅 방식 등 전체 구조가 크게 바뀐 경우
@@ -47,7 +47,7 @@ PATCH=$(echo "$CUR_VER" | awk -F. '{print $3+1}')
 NEW_VER=$(echo "$CUR_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")  # PATCH 예시
 
 # 3. 로컬 버전 갱신
-echo "$NEW_VER" > ~/.claude/settings.version
+echo "$NEW_VER" > ~/.claude/settings.version.json
 
 # 4. settings/ 전체 갱신
 SKILL_DIR=".claude/skills/claude"
@@ -55,7 +55,7 @@ SETTINGS="$SKILL_DIR/settings"
 normalize() { sed "s|$(pwd)/$SKILL_DIR|__SKILL_DIR__|g; s|$HOME/|~/|g"; }
 normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
 find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$SETTINGS/" \;
-echo "$NEW_VER" > "$SETTINGS/settings.version"
+echo "$NEW_VER" > "$SETTINGS/settings.version.json"
 
 # 5. 커밋 & 푸시 (메시지에 버전 포함 필수)
 git add "$SETTINGS/" && git commit -m "기타. claude sync. [변경내용] [v${NEW_VER}]" && git push

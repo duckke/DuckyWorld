@@ -6,6 +6,10 @@ SETTINGS="$SKILL_DIR/settings"
 
 command -v jq &>/dev/null || exit 0
 
+# 파일명 마이그레이션 (settings.version → settings.version.json)
+[ -f ~/.claude/settings.version.json ] && [ ! -f ~/.claude/settings.version.json.json ] && mv ~/.claude/settings.version.json ~/.claude/settings.version.json.json
+[ -f "$SETTINGS/settings.version.json" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version.json" "$SETTINGS/settings.version.json"
+
 normalize() {
   sed "s|${SKILL_DIR}|__SKILL_DIR__|g; s|${HOME}/|~/|g"
 }
@@ -55,13 +59,13 @@ fi
 # ── 5. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
 
 if [ "$CHANGED" = true ]; then
-  CUR_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "1.0.0")
+  CUR_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "1.0.0")
   PATCH=$(echo "$CUR_VER" | awk -F. '{print $3+1}')
   NEW_VER=$(echo "$CUR_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")
 
   # 버전 파일 갱신
-  echo "$NEW_VER" > ~/.claude/settings.version
-  echo "$NEW_VER" > "$SETTINGS/settings.version"
+  echo "$NEW_VER" > ~/.claude/settings.version.json
+  echo "$NEW_VER" > "$SETTINGS/settings.version.json"
 
   # settings.json 갱신
   normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
