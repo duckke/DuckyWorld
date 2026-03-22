@@ -2,26 +2,24 @@
 # UserPromptSubmit 훅 - 버전 비교 후 AUTO-SYNC / AUTO-APPLY 주입
 
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJ_SETTINGS="$SKILL_DIR/settings.json"
-
-command -v jq &>/dev/null || exit 0
+MIRROR="$SKILL_DIR/mirror"
 
 ver_gt() {
   [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ] && [ "$1" != "$2" ]
 }
 
 # Case 1: 로컬 변경사항 pending → AUTO-SYNC
-if [ -f /tmp/claude_pending_push.json ]; then
-  PENDING_VER=$(jq -r '.__version__ // "0"' /tmp/claude_pending_push.json)
-  echo "[AUTO-SYNC] settings.json이 변경되었습니다 (→ v${PENDING_VER}). 사용자에게 커밋 여부를 물어보세요. 동의 시: pending 내용을 .claude/skills/claude/settings.json에 저장 후 git commit & push. 거부 시: /tmp/claude_pending_push.json 삭제."
+if [ -f /tmp/claude_pending_push.txt ]; then
+  NEW_VER=$(cat /tmp/claude_pending_push.txt)
+  echo "[AUTO-SYNC] settings이 변경되었습니다 (→ v${NEW_VER}). 사용자에게 커밋 여부를 물어보세요. 동의 시: git add & commit & push. 거부 시: /tmp/claude_pending_push.txt 삭제."
   exit 0
 fi
 
-# Case 2: 깃 버전이 로컬보다 높음 → 즉시 적용
-GIT_VER=$(jq -r '.__version__ // "0"' "$PROJ_SETTINGS" 2>/dev/null)
-LOCAL_VER=$(jq -r '.__version__ // "0"' ~/.claude/settings.json 2>/dev/null)
+# Case 2: 미러 버전이 로컬보다 높음 → 즉시 적용
+MIRROR_VER=$(cat "$MIRROR/.version" 2>/dev/null || echo "0")
+LOCAL_VER=$(cat ~/.claude/.version 2>/dev/null || echo "0")
 
-if ver_gt "$GIT_VER" "$LOCAL_VER"; then
+if ver_gt "$MIRROR_VER" "$LOCAL_VER"; then
   bash "$SKILL_DIR/sync.sh" 2>/dev/null
-  echo "[AUTO-APPLIED] 깃 settings.json이 자동 적용되었습니다 (v${LOCAL_VER} → v${GIT_VER}). Claude Code 재시작이 필요할 수 있습니다."
+  echo "[AUTO-APPLIED] Claude 설정이 자동 적용되었습니다 (v${LOCAL_VER} → v${MIRROR_VER}). Claude Code 재시작이 필요할 수 있습니다."
 fi
