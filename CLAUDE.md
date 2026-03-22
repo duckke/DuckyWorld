@@ -7,7 +7,7 @@
 - **상태**: 기획 단계 (개발 미착수)
 
 ## 에이전트 사용 규칙
-- 파일 탐색이 필요하거나 3개 이상 파일을 수정하는 작업은 **도메인 오케스트레이터 에이전트**를 통해 수행
+- 파일을 읽고 분석한 뒤 수정하는 작업은 파일 수와 무관하게 **도메인 오케스트레이터 에이전트**를 통해 수행
   - 코드 작업 → `.claude/agents/develop/orchestrator.md`
   - 기획/디자인 → `.claude/agents/design/orchestrator.md`
   - Notion 동기화 → `.claude/agents/notion/orchestrator.md`
