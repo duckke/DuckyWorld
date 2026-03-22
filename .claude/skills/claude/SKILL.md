@@ -35,31 +35,14 @@ description: 클로드 코드 설정을 기기 간 동기화한다.
 
 **Claude가 `~/.claude/` 관련 파일을 수정한 즉시 아래 순서를 실행한다. 절대 빠뜨리지 말 것.**
 
-```bash
-# 1. 현재 버전 읽기
-CUR_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "1.0.0")
-
-# 2. 변경 규모에 따라 버전 결정
-# MAJOR (x.0.0): 동기화 구조, 훅 방식 등 전체 구조가 크게 바뀐 경우
-# MINOR (x.y.0): 기능 추가, 중간 규모 구조 변경
-# PATCH (x.y.z): 자잘한 수정, 버그 픽스, 스타일 변경
-PATCH=$(echo "$CUR_VER" | awk -F. '{print $3+1}')
-NEW_VER=$(echo "$CUR_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")  # PATCH 예시
-
-# 3. 로컬 버전 갱신
-echo "$NEW_VER" > ~/.claude/settings.version.json
-
-# 4. settings/ 전체 갱신
-SKILL_DIR=".claude/skills/claude"
-SETTINGS="$SKILL_DIR/settings"
-normalize() { sed "s|$(pwd)/$SKILL_DIR|__SKILL_DIR__|g; s|$HOME/|~/|g"; }
-normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
-find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$SETTINGS/" \;
-echo "$NEW_VER" > "$SETTINGS/settings.version.json"
-
-# 5. 커밋 & 푸시 (메시지에 버전 포함 필수)
-git add "$SETTINGS/" && git commit -m "기타. claude sync. [변경내용] [v${NEW_VER}]" && git push
-```
+1. `~/.claude/settings.version.json`에서 현재 버전 읽기
+2. 변경 규모에 따라 버전 결정
+   - MAJOR (x.0.0): 동기화 구조, 훅 방식 등 전체 구조가 크게 바뀐 경우
+   - MINOR (x.y.0): 기능 추가, 중간 규모 구조 변경
+   - PATCH (x.y.z): 자잘한 수정, 버그 픽스, 스타일 변경
+3. `~/.claude/settings.version.json`에 새 버전 저장
+4. `settings/` 전체 갱신: `settings.json` 정규화 복사, `.sh` 파일 복사, `settings.version.json` 갱신
+5. 커밋 & 푸시 — 메시지에 버전 포함 필수: `기타. claude sync. [변경내용] [v{버전}]`
 
 - **깃 버전보다 로컬이 높아야 다른 기기에 전파된다** — 버전 올리지 않으면 동기화 안 됨
 - 사용자가 직접 설정을 바꾼 경우 → Stop 훅이 자동 감지 → AUTO-SYNC로 알림 → 동의 시 위 과정 실행

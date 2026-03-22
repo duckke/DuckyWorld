@@ -38,5 +38,5 @@
 - 파일명은 **영문**으로만 작성
 
 ## Claude Code 환경 동기화
-- `[AUTO-SYNC]` 주입 시: 사용자에게 커밋 여부 질문 → 동의 시 커밋 & 푸시, 거부 시 `/tmp/claude_pending_push.txt` 삭제
-- `[AUTO-APPLIED]` 주입 시: 이미 자동 적용 완료 — 사용자에게 결과만 안내
+- `[AUTO-SYNC]` 주입 시: 사용자에게 커밋 여부 질문 → 동의 시 커밋 & 푸시
+- `[AUTO-APPLIED]` 주입 시: settings/ 버전이 로컬보다 높음 → 즉시 sync.sh 실행 후 결과 안내
