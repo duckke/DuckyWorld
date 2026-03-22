@@ -23,6 +23,12 @@ else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
 fi
 
+# statusline-command.sh 복사
+if [ -f "$SKILL_DIR/statusline-command.sh" ]; then
+  cp "$SKILL_DIR/statusline-command.sh" ~/.claude/statusline-command.sh
+  echo "✅ statusline-command.sh 적용 완료"
+fi
+
 # post-merge 훅 설치 - git pull 후 자동 버전 체크 & 적용
 HOOK_FILE="$REPO_DIR/.git/hooks/post-merge"
 cat > "$HOOK_FILE" << HOOK
