@@ -13,7 +13,7 @@
   └── 비서 (메인컨텍스트) — 지시 전달 및 결과 보고만 담당
         └── 개발팀장 → 코더, 리뷰어, 리팩터, 뒤적이, 뚝딱이
         └── 기획팀장 → 크리, 로직, 뒤적이, 뚝딱이
-        └── 노션팀장 → 다듬이, 뒤적이
+        └── 출판팀장 → 다듬이, 뒤적이
         └── 클로드팀장 → 뒤적이, 뚝딱이
 ```
 
@@ -26,7 +26,7 @@
 **팀장 라우팅:**
 - 코드 작업 → 개발팀장 `.claude/agents/develop/orchestrator.md`
 - 기획/디자인 → 기획팀장 `.claude/agents/design/orchestrator.md`
-- Notion 동기화 → 노션팀장 `.claude/agents/notion/orchestrator.md`
+- Notion 발행 → 출판팀장 `.claude/agents/publish/orchestrator.md`
 - Claude 환경(스킬/에이전트/설정) → 클로드팀장 `.claude/agents/claude/orchestrator.md`
 
 ## 스킬 작성 규칙
