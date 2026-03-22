@@ -1,5 +1,5 @@
 {
-  "__version__": "1.0.0",
+  "__version__": "1.0.1",
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
@@ -41,9 +41,5 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "command": "bash ~/.claude/statusline-command.sh",
-    "type": "command"
   }
 }

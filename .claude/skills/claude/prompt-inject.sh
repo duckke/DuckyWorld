@@ -17,10 +17,11 @@ if [ -f /tmp/claude_pending_push.json ]; then
   exit 0
 fi
 
-# Case 2: 깃 버전이 로컬보다 높음 → AUTO-APPLY
+# Case 2: 깃 버전이 로컬보다 높음 → 즉시 적용
 GIT_VER=$(jq -r '.__version__ // "0"' "$PROJ_SETTINGS" 2>/dev/null)
 LOCAL_VER=$(jq -r '.__version__ // "0"' ~/.claude/settings.json 2>/dev/null)
 
 if ver_gt "$GIT_VER" "$LOCAL_VER"; then
-  echo "[AUTO-APPLY] 깃 settings.json이 더 최신입니다 (로컬 v${LOCAL_VER} → 깃 v${GIT_VER}). 사용자에게 적용 여부를 물어보세요. 동의 시: bash ${SKILL_DIR}/sync.sh 실행."
+  bash "$SKILL_DIR/sync.sh" 2>/dev/null
+  echo "[AUTO-APPLIED] 깃 settings.json이 자동 적용되었습니다 (v${LOCAL_VER} → v${GIT_VER}). Claude Code 재시작이 필요할 수 있습니다."
 fi

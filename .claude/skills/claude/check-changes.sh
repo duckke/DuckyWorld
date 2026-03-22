@@ -16,9 +16,9 @@ CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S "$EXCLUDE" 2>/
 SAVED=$(jq -S "$EXCLUDE" "$PROJ_SETTINGS" 2>/dev/null || echo "")
 
 if [ "$CURRENT" != "$SAVED" ]; then
-  LOCAL_VER=$(jq -r '.__version__ // "1.0.0"' ~/.claude/settings.json 2>/dev/null)
-  PATCH=$(echo "$LOCAL_VER" | awk -F. '{print $3+1}')
-  NEW_VER=$(echo "$LOCAL_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")
+  REPO_VER=$(jq -r '.__version__ // "1.0.0"' "$PROJ_SETTINGS" 2>/dev/null)
+  PATCH=$(echo "$REPO_VER" | awk -F. '{print $3+1}')
+  NEW_VER=$(echo "$REPO_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")
 
   normalize < ~/.claude/settings.json 2>/dev/null \
     | jq -S --arg v "$NEW_VER" "$EXCLUDE | . + {__version__: \$v}" \
