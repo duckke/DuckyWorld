@@ -11,10 +11,9 @@ description: 클로드 코드 설정을 기기 간 동기화한다.
 
 동기화 대상 파일:
 - `settings.json` — 클로드 설정값 (훅, 권한, 마켓플레이스 등)
-- `statusline-command.sh` — 상태창 스크립트
-- `sync.sh` — 동기화 실행 스크립트
-- `check-changes.sh` — 변경 감지 스크립트
-- `prompt-inject.sh` — 알림 주입 스크립트
+- `files/` — `~/.claude/`의 미러 디렉토리. 여기 있는 파일이 모두 `~/.claude/`에 복사됨
+  - 새 파일이 필요하면 이 디렉토리에 추가하면 자동으로 동기화됨
+  - `*.sh`, `keybindings.json` 등 `~/.claude/`에 추가된 파일은 `check-changes.sh`가 자동 감지해서 `files/`에 추가
 
 ## 설정 변경 시 행동 규칙
 

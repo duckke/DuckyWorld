@@ -5,6 +5,7 @@ set -e
 
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SKILL_DIR/../../.." && pwd)"
+FILES_DIR="$SKILL_DIR/files"
 
 echo "🔄 Claude Code 환경 동기화 중..."
 
@@ -23,10 +24,15 @@ else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
 fi
 
-# statusline-command.sh 복사
-if [ -f "$SKILL_DIR/statusline-command.sh" ]; then
-  cp "$SKILL_DIR/statusline-command.sh" ~/.claude/statusline-command.sh
-  echo "✅ statusline-command.sh 적용 완료"
+# files/ 디렉토리 전체를 ~/.claude/ 에 복사
+if [ -d "$FILES_DIR" ]; then
+  while IFS= read -r -d '' repo_file; do
+    rel="${repo_file#$FILES_DIR/}"
+    dest="$HOME/.claude/$rel"
+    mkdir -p "$(dirname "$dest")"
+    cp "$repo_file" "$dest"
+  done < <(find "$FILES_DIR" -type f -print0)
+  echo "✅ files/ 동기화 완료"
 fi
 
 # post-merge 훅 설치 - git pull 후 자동 버전 체크 & 적용
