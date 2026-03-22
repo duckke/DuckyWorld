@@ -49,7 +49,7 @@ description: 변경사항을 규칙에 맞춰 커밋하고 푸시한다.
 기타. claude sync. 상세내용 [v{버전}]
 ```
 
-버전은 `~/.claude/settings.version` 또는 `settings/settings.version` 파일에서 확인한다.
+버전은 `~/.claude/settings.version.json` 또는 `settings/settings.version.json` 파일에서 확인한다.
 
 ## 워크플로우
 
