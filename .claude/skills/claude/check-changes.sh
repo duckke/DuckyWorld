@@ -7,8 +7,8 @@ SETTINGS="$SKILL_DIR/settings"
 command -v jq &>/dev/null || exit 0
 
 # 파일명 마이그레이션 (settings.version → settings.version.json)
-[ -f ~/.claude/settings.version.json ] && [ ! -f ~/.claude/settings.version.json.json ] && mv ~/.claude/settings.version.json ~/.claude/settings.version.json.json
-[ -f "$SETTINGS/settings.version.json" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version.json" "$SETTINGS/settings.version.json"
+[ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
+[ -f "$SETTINGS/settings.version" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version" "$SETTINGS/settings.version.json"
 
 normalize() {
   sed "s|${SKILL_DIR}|__SKILL_DIR__|g; s|${HOME}/|~/|g"
@@ -18,8 +18,9 @@ CHANGED=false
 
 # ── 1. settings.json 비교 ────────────────────────────────────────────────
 
-CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S '.' 2>/dev/null || echo "")
-SAVED=$(jq -S '.' "$SETTINGS/settings.json" 2>/dev/null || echo "")
+# model 키는 기기별 설정이므로 비교에서 제외
+CURRENT=$(normalize < ~/.claude/settings.json 2>/dev/null | jq -S 'del(.model)' 2>/dev/null || echo "")
+SAVED=$(jq -S 'del(.model)' "$SETTINGS/settings.json" 2>/dev/null || echo "")
 
 if [ "$CURRENT" != "$SAVED" ]; then
   CHANGED=true
@@ -67,8 +68,8 @@ if [ "$CHANGED" = true ]; then
   echo "$NEW_VER" > ~/.claude/settings.version.json
   echo "$NEW_VER" > "$SETTINGS/settings.version.json"
 
-  # settings.json 갱신
-  normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
+  # settings.json 갱신 (model 키 제외)
+  normalize < ~/.claude/settings.json | jq -S 'del(.model)' > "$SETTINGS/settings.json"
 
   # *.sh 파일 갱신
   find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$SETTINGS/" \;

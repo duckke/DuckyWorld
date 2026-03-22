@@ -15,10 +15,16 @@ if ! command -v jq &>/dev/null; then
   brew install jq
 fi
 
-# settings.json 적용 (__SKILL_DIR__ 및 ~/ 치환 후 기존 설정과 병합)
+# settings.json 적용 (__SKILL_DIR__ 및 ~/ 치환 후 기존 설정과 병합, model 키 보존)
 SETTINGS_JSON=$(sed "s|__SKILL_DIR__|${SKILL_DIR}|g; s|~/|${HOME}/|g" "$SETTINGS/settings.json")
 if [ -f ~/.claude/settings.json ]; then
+  LOCAL_MODEL=$(jq -r '.model // empty' ~/.claude/settings.json 2>/dev/null)
   echo "$SETTINGS_JSON" | jq --slurpfile cur ~/.claude/settings.json '($cur[0] // {}) * .' > /tmp/claude_settings_tmp.json
+  # 로컬 model 복원
+  if [ -n "$LOCAL_MODEL" ]; then
+    jq --arg m "$LOCAL_MODEL" '.model = $m' /tmp/claude_settings_tmp.json > /tmp/claude_settings_tmp2.json
+    mv /tmp/claude_settings_tmp2.json /tmp/claude_settings_tmp.json
+  fi
   mv /tmp/claude_settings_tmp.json ~/.claude/settings.json
 else
   echo "$SETTINGS_JSON" > ~/.claude/settings.json
