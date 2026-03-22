@@ -6,6 +6,14 @@
 - **플랫폼**: iOS / Android / PC
 - **상태**: 기획 단계 (개발 미착수)
 
+## 에이전트 사용 규칙
+- 파일 탐색이 필요하거나 3개 이상 파일을 수정하는 작업은 **도메인 오케스트레이터 에이전트**를 통해 수행
+- 라우팅 기준: `.claude/manager/orchestrator.md` 참고
+  - 코드 작업 → `.claude/agents/develop/orchestrator.md`
+  - 기획/디자인 → `.claude/agents/design/orchestrator.md`
+  - Notion 동기화 → `.claude/agents/notion/orchestrator.md`
+- 메인컨텍스트는 오케스트레이터 호출과 최종 커밋/푸시만 담당
+
 ## 스킬 작성 규칙
 - 스킬에 규칙 추가 시 일반화된 내용으로 작성 — 지나치게 구체적인 예시 금지
 
