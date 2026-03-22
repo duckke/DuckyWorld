@@ -31,11 +31,35 @@ description: 클로드 코드 설정을 기기 간 동기화한다.
 - `~/.claude/*.sh` (신규 파일 포함)
 - `~/.claude/keybindings.json`
 
-## 설정 변경 시 행동 규칙
+## 설정 변경 시 행동 규칙 ⚠️ 반드시 준수
 
-1. Claude가 `~/.claude/` 파일을 수정하면 → **묻지 말고 바로** 커밋 & 푸시
-2. 커밋 메시지에 **반드시 버전 포함** (예: `기타. claude sync. 상태창 수정 [v1.0.4]`)
-3. 사용자가 직접 설정을 바꾼 경우 → Stop 훅이 자동 감지 → AUTO-SYNC로 알림
+**Claude가 `~/.claude/` 관련 파일을 수정한 즉시 아래 순서를 실행한다. 절대 빠뜨리지 말 것.**
+
+```bash
+# 1. 현재 버전 읽기
+CUR_VER=$(cat ~/.claude/settings.version 2>/dev/null || echo "1.0.0")
+
+# 2. 패치 버전 +1
+PATCH=$(echo "$CUR_VER" | awk -F. '{print $3+1}')
+NEW_VER=$(echo "$CUR_VER" | awk -F. "{print \$1\".\"\$2\".\"$PATCH}")
+
+# 3. 로컬 버전 갱신
+echo "$NEW_VER" > ~/.claude/settings.version
+
+# 4. settings/ 전체 갱신
+SKILL_DIR=".claude/skills/claude"
+SETTINGS="$SKILL_DIR/settings"
+normalize() { sed "s|$(pwd)/$SKILL_DIR|__SKILL_DIR__|g; s|$HOME/|~/|g"; }
+normalize < ~/.claude/settings.json | jq -S '.' > "$SETTINGS/settings.json"
+find "$HOME/.claude" -maxdepth 1 -type f -name "*.sh" -exec cp {} "$SETTINGS/" \;
+echo "$NEW_VER" > "$SETTINGS/settings.version"
+
+# 5. 커밋 & 푸시 (메시지에 버전 포함 필수)
+git add "$SETTINGS/" && git commit -m "기타. claude sync. [변경내용] [v${NEW_VER}]" && git push
+```
+
+- **깃 버전보다 로컬이 높아야 다른 기기에 전파된다** — 버전 올리지 않으면 동기화 안 됨
+- 사용자가 직접 설정을 바꾼 경우 → Stop 훅이 자동 감지 → AUTO-SYNC로 알림 → 동의 시 위 과정 실행
 
 ## 동기화 플로우
 
