@@ -9,8 +9,6 @@
 | 코더 | `coder.md` | Unity/C# 구현 |
 | 리뷰어 | `reviewer.md` | 버그/성능/보안 리뷰 |
 | 리팩터 | `refactor.md` | 동작 보존하며 구조 개선 |
-| 뒤적이 | `../common/explorer.md` | 파일 탐색 |
-| 뚝딱이 | `../common/modifier.md` | 파일 수정 |
 
 ## 워크플로우
 

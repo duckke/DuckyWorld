@@ -6,7 +6,7 @@ description: 기획서 md를 Notion 페이지에 동기화한다.
 # Notion 동기화 스킬
 
 기획서 md 파일을 포매터 에이전트로 가공한 뒤 Notion 페이지에 반영한다.
-에이전트 위임 및 워크플로우는 **출판 오케스트레이터** (`.claude/agents/publish/orchestrator.md`) 참고.
+에이전트 위임 및 워크플로우는 **출판팀장** (`.claude/agents/publish/leader.md`) 참고.
 
 ## 매핑 파일
 
