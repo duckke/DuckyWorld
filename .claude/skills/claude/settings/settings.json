@@ -42,6 +42,7 @@
       }
     ]
   },
+  "model": "opus",
   "statusLine": {
     "command": "bash ~/.claude/statusline-command.sh",
     "type": "command"
