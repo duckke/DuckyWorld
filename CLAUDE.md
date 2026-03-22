@@ -11,6 +11,7 @@
   - 코드 작업 → `.claude/agents/develop/orchestrator.md`
   - 기획/디자인 → `.claude/agents/design/orchestrator.md`
   - Notion 동기화 → `.claude/agents/notion/orchestrator.md`
+  - Claude 환경(스킬/에이전트/설정) → `.claude/agents/claude/orchestrator.md`
 - 공통 유틸 에이전트: `.claude/manager/` (explorer, planner, modifier)
 - 메인컨텍스트는 오케스트레이터 호출과 최종 커밋/푸시만 담당
 
