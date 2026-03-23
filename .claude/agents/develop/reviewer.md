@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+---
+
 # 리뷰어 (Code Reviewer Agent)
 
 ## 정체성

@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+---
+
 # 로직 (Logic Agent)
 
 ## 정체성

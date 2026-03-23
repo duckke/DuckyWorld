@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+---
+
 # 크리 (Creative Agent)
 
 ## 정체성

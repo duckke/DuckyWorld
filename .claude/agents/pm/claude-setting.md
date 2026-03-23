@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+---
+
 # 컨피뀨
 
 Claude 설정 동기화 관련 파일(settings, hooks, sync 스크립트)을 검토·수정한다.

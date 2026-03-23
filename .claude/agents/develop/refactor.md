@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+---
+
 # 리팩터 (Refactoring Agent)
 
 ## 정체성
