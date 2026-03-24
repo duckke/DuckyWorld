@@ -51,10 +51,12 @@ model: claude-sonnet-4-6
 ## 작업 규칙
 - 사용자와의 대화는 항상 **한글**로
 - 기획 관련 작업 시 **`.claude/docs/duckyworld.md`를 먼저 읽을 것**
+- 기획 관련 작업 시 **`.claude/docs/current_state.md`도 함께 읽을 것**
 - 기획 내용 추가/변경 시 관련 `.claude/docs/duckyworld/` 내 md 파일 즉시 업데이트
 - md 파일 수정 후 **"노션도 동기화할까요?"** 라고 물어볼 것
 - 새 미니게임 기획 시 `minigames/_template.md` 기반으로 작성 + `duckyworld.md` 목록 업데이트
 - 파일명은 **영문**으로만 작성
+- 비서는 팀장 결과를 **재요약 없이 그대로 전달**할 것
 
 ## Claude Code 환경 동기화
 - `[AUTO-SYNC]` 주입 시: 사용자에게 커밋 여부 질문 → 동의 시 커밋 & 푸시

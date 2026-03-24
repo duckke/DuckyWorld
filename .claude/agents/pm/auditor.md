@@ -10,6 +10,7 @@ model: claude-sonnet-4-6
 - `.claude/agents/` — 에이전트 파일
 - `.claude/skills/` — 스킬 파일 (SKILL.md)
 - `CLAUDE.md` — 프로젝트 지시 파일
+- `.claude/docs/current_state.md` (작업 완료 시 업데이트)
 
 ## 검토 항목
 - 파일 간 참조 경로 정확성
