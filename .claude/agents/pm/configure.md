@@ -2,7 +2,7 @@
 model: claude-sonnet-4-6
 ---
 
-# 컨피뀨
+# 컨피규
 
 Claude 설정 동기화 관련 파일을 검토·수정한다.
 

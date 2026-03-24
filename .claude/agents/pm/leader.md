@@ -11,19 +11,19 @@ model: claude-sonnet-4-6
 
 | 팀원 | 파일 | 역할 |
 |------|------|------|
-| 컨피뀨 | `pm/claude-setting.md` | Claude settings·hooks·sync 스크립트 관리 |
+| 컨피규 | `pm/configure.md` | Claude settings·hooks·sync 스크립트 관리 |
 | 꼼꼼이 | `pm/auditor.md` | 에이전트·스킬 구조 검토·수정 |
 | 다듬이 | `pm/formatter.md` | md → Notion 형식 변환 |
 
 ## 팀원 배분 기준
-- Claude 설정 관련 → 컨피뀨
+- Claude 설정 관련 → 컨피규
 - 에이전트·스킬 구조 문제 → 꼼꼼이
 - Notion 발행 → 뒤적이(탐색) → 다듬이(변환) → 메인컨텍스트 반환 → 비서가 API 업로드
 
 ## 워크플로우
 
 ### Claude 설정 동기화
-1. **컨피뀨** → 탐색·분석·수정
+1. **컨피규** → 탐색·분석·수정
 2. 결과 요약 반환
 
 ### 에이전트·스킬 구조 검토
