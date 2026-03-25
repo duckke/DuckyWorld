@@ -6,9 +6,10 @@ SETTINGS="$SKILL_DIR/settings"
 
 command -v jq &>/dev/null || exit 0
 
-# 파일명 마이그레이션 (settings.version → settings.version.json)
-[ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
-[ -f "$SETTINGS/settings.version" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version" "$SETTINGS/settings.version.json"
+source "$SKILL_DIR/common.sh"
+
+# 파일명 마이그레이션
+migrate_version_files "$SETTINGS"
 
 normalize() {
   sed "s|${SKILL_DIR}|__SKILL_DIR__|g; s|${HOME}/|~/|g"
@@ -57,7 +58,51 @@ if [ -f "$SETTINGS/crontab" ]; then
   fi
 fi
 
-# ── 5. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
+# ── 5. 메모리 파일 비교 ───────────────────────────────────────────────────
+
+REPO_DIR="$(cd "$SKILL_DIR/../../.." && pwd)"
+REPO_MEMORY="$REPO_DIR/.claude/memory"
+# 로컬 메모리 경로: ~/.claude/projects/-경로-형식/memory/
+LOCAL_MEMORY="$HOME/.claude/projects/$(echo "$REPO_DIR" | sed 's|/|-|g')/memory"
+
+MEMORY_CHANGED=false
+if [ -d "$LOCAL_MEMORY" ]; then
+  # 로컬 메모리 → Git 메모리 비교
+  mkdir -p "$REPO_MEMORY"
+  while IFS= read -r -d '' local_file; do
+    filename="$(basename "$local_file")"
+    repo_file="$REPO_MEMORY/$filename"
+    if [ ! -f "$repo_file" ] || ! diff -q "$local_file" "$repo_file" &>/dev/null; then
+      MEMORY_CHANGED=true
+      break
+    fi
+  done < <(find "$LOCAL_MEMORY" -maxdepth 1 -type f -print0)
+
+  # Git 메모리에만 있고 로컬에 없는 파일 체크 (삭제 감지)
+  if [ "$MEMORY_CHANGED" = false ] && [ -d "$REPO_MEMORY" ]; then
+    while IFS= read -r -d '' repo_file; do
+      filename="$(basename "$repo_file")"
+      if [ ! -f "$LOCAL_MEMORY/$filename" ]; then
+        MEMORY_CHANGED=true
+        break
+      fi
+    done < <(find "$REPO_MEMORY" -maxdepth 1 -type f -print0)
+  fi
+fi
+
+if [ "$MEMORY_CHANGED" = true ]; then
+  CHANGED=true
+  # 로컬 메모리 → Git 메모리로 동기화 (삭제 포함)
+  mkdir -p "$REPO_MEMORY"
+  # 로컬에 실제 파일이 있을 때만 Git 메모리를 비우고 복사
+  LOCAL_FILE_COUNT=$(find "$LOCAL_MEMORY" -maxdepth 1 -type f | wc -l | tr -d ' ')
+  if [ "$LOCAL_FILE_COUNT" -gt 0 ]; then
+    rm -f "$REPO_MEMORY"/*
+    find "$LOCAL_MEMORY" -maxdepth 1 -type f -exec cp {} "$REPO_MEMORY/" \;
+  fi
+fi
+
+# ── 6. 변경 있으면 버전 올리고 settings/ 갱신 ────────────────────────────
 
 if [ "$CHANGED" = true ]; then
   CUR_VER=$(cat ~/.claude/settings.version.json 2>/dev/null || echo "1.0.0")

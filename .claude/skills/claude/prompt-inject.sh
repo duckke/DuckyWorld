@@ -4,13 +4,10 @@
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 SETTINGS="$SKILL_DIR/settings"
 
-ver_gt() {
-  [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ] && [ "$1" != "$2" ]
-}
+source "$SKILL_DIR/common.sh"
 
-# 파일명 마이그레이션 (settings.version → settings.version.json)
-[ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
-[ -f "$SETTINGS/settings.version.json" ] && [ ! -f "$SETTINGS/settings.version.json" ] && mv "$SETTINGS/settings.version.json" "$SETTINGS/settings.version.json"
+# 파일명 마이그레이션
+migrate_version_files "$SETTINGS"
 
 # Case 0: Claude Code 업데이트 알림
 if [ -f /tmp/claude_update_notify.txt ]; then
@@ -23,7 +20,7 @@ fi
 # Case 1: 로컬 변경사항 pending → AUTO-SYNC
 if [ -f /tmp/claude_pending_push.txt ]; then
   NEW_VER=$(cat /tmp/claude_pending_push.txt)
-  echo "[AUTO-SYNC] settings이 변경되었습니다 (→ v${NEW_VER}). 사용자에게 커밋 여부를 물어보세요. 동의 시: git add & commit & push. 거부 시: /tmp/claude_pending_push.txt 삭제."
+  echo "[AUTO-SYNC] settings이 변경되었습니다 (→ v${NEW_VER}). 즉시 커밋 & 푸시하세요."
   exit 0
 fi
 
