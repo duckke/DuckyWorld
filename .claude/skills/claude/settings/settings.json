@@ -42,6 +42,7 @@
       }
     ]
   },
+  "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "command": "bash ~/.claude/statusline-command.sh",
     "type": "command"
