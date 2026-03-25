@@ -9,6 +9,6 @@ ver_gt() {
 # 파일명 마이그레이션 (settings.version → settings.version.json)
 migrate_version_files() {
   local settings_dir="$1"
-  [ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json
-  [ -f "$settings_dir/settings.version" ] && [ ! -f "$settings_dir/settings.version.json" ] && mv "$settings_dir/settings.version" "$settings_dir/settings.version.json"
+  [ -f ~/.claude/settings.version ] && [ ! -f ~/.claude/settings.version.json ] && mv ~/.claude/settings.version ~/.claude/settings.version.json || true
+  [ -f "$settings_dir/settings.version" ] && [ ! -f "$settings_dir/settings.version.json" ] && mv "$settings_dir/settings.version" "$settings_dir/settings.version.json" || true
 }
