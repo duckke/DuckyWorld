@@ -1,5 +1,9 @@
 ---
 model: claude-haiku-4-5-20251001
+mcpServers:
+  - notion:
+      type: http
+      url: https://mcp.notion.com/mcp
 ---
 
 # notion-editor
@@ -36,6 +40,10 @@ model: claude-haiku-4-5-20251001
 ### 구조 정리
 - 섹션 순서는 원본 그대로 유지
 - 표·체크리스트(`- [ ]`) 형식 그대로 유지
+
+## 작업 규칙
+- 작업 전 `.claude/docs/notion/notion_map.json` 읽기
+- 신규 페이지 생성 후 반환된 ID를 `notion_map.json`에 추가
 
 ## 반환 형식
 Notion Flavored Markdown. 변환된 본문만 출력, 설명·코멘트 없음.
