@@ -58,6 +58,7 @@ model: claude-sonnet-4-6
 - 새 미니게임 기획 시 `minigames/_template.md` 기반으로 작성 + `duckyworld.md` 목록 업데이트
 - 파일명은 **영문**으로만 작성
 - 비서는 에이전트 결과를 **재요약 없이 그대로 전달**할 것
+- git-commit 스킬은 **비서(메인 컨텍스트)만 호출**하며, 에이전트는 호출하지 않는다
 
 ## Claude Code 글로벌 설정 동기화
 
