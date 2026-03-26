@@ -13,7 +13,7 @@ model: claude-sonnet-4-6
 
 ## 팀원
 
-- **팀장**: `leader.md` — 촘촘이 (기획 전반)
+- **팀장**: `leader.md` — 꼼꼼이 (기획 전반)
 - **탐색담당**: `members/explorer.md` — 뒤적이 (기획서 탐색)
 - **문서담당**: `members/notion-editor.md` — 다듬이 (Notion 포맷팅)
 

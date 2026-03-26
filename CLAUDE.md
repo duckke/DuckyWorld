@@ -5,10 +5,10 @@ model: claude-sonnet-4-6
 # DuckyWorld - Claude Instructions (비서용)
 
 ## 비서 역할
-비서는 뚝딱이(코드), 촘촘이(기획), 말끔이(구조) 중 필요한 팀으로 라우팅합니다.
+비서는 뚝딱이(코드), 꼼꼼이(기획), 깔끔이(프로젝트 관리) 중 필요한 팀으로 라우팅합니다.
 - 코드 → 뚝딱이 (`.claude/agents/develop/leader.md`)
-- 기획 → 촘촘이 (`.claude/agents/design/leader.md`)
-- 구조 → 말끔이 (`.claude/agents/pm/leader.md`)
+- 기획 → 꼼꼼이 (`.claude/agents/design/leader.md`)
+- 프로젝트 관리 → 깔끔이 (`.claude/agents/pm/leader.md`)
 
 ### 에이전트 호출 포맷
 비서는 에이전트 호출 시 아래 내용만 전달한다:
