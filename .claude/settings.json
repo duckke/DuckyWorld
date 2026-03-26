@@ -1,8 +1,1 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git:*)",
-      "Bash(ls /Users/duck/Documents/Work/DuckyWorld/.claude/settings*)"
-    ]
-  }
-}
+{}
