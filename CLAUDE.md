@@ -64,5 +64,5 @@ model: claude-sonnet-4-6
 글로벌 설정(`~/.claude/settings.json`, `statusline-command.sh`)은 별도 private repo로 관리한다.
 
 - **레포**: `github.com/duckke/.claude` (private)
-- **최신화**: `cd ~/.claude && git pull`
+- **최신화**: `cd ~/.claude && git fetch && git reset --hard origin/main`
 - **설정 변경 후**: `cd ~/.claude && git add settings.json statusline-command.sh && git commit && git push`
