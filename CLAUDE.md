@@ -62,13 +62,10 @@ model: claude-sonnet-4-6
 - 파일명은 **영문**으로만 작성
 - 비서는 에이전트 결과를 **재요약 없이 그대로 전달**할 것
 
-## Claude Code 환경 동기화
+## Claude Code 글로벌 설정 동기화
 
-> **규칙: 아래 두 케이스 모두 질문 없이 즉시 실행한다.**
+글로벌 설정(`~/.claude/settings.json`, `statusline-command.sh`)은 별도 private repo로 관리한다.
 
-- `[AUTO-SYNC]` 주입 시: 로컬 설정값이 바뀌어 버전이 올라간 것 → **질문 없이 즉시** 커밋 & 푸시
-  - `git add .claude/skills/claude/settings/ && git commit && git push`
-- `[AUTO-APPLIED]` 주입 시: git의 settings/ 버전이 로컬보다 높음 → **질문 없이 즉시** sync.sh 실행 후 결과 안내
-  - `bash .claude/skills/claude/sync.sh`
-
-> **주의:** post-merge 훅이 없으면 pull 후 자동 적용이 안 된다. sync.sh를 한 번이라도 실행하면 훅이 설치된다. `.git/hooks/post-merge` 없으면 먼저 `mkdir -p .git/hooks && bash .claude/skills/claude/sync.sh` 실행.
+- **레포**: `github.com/duckke/.claude` (private)
+- **최신화**: `cd ~/.claude && git pull`
+- **설정 변경 후**: `cd ~/.claude && git add settings.json statusline-command.sh && git commit && git push`
