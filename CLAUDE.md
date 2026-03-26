@@ -49,7 +49,7 @@ model: claude-sonnet-4-6
 ## 에이전트 라우팅
 - 코드 작업 → 개발자 `.claude/agents/develop/developer.md`
 - 기획/디자인 → 기획자 `.claude/agents/design/planner.md`
-- 에이전트/스킬 구조 → 꼼꼼이 `.claude/agents/pm/auditor.md`
+- 에이전트/스킬 구조 → 꼼꼼이 `.claude/agents/pm/cleaner.md`
 - Claude 설정·환경 → 컨피규 `.claude/agents/pm/configure.md`
 
 ## 작업 규칙
