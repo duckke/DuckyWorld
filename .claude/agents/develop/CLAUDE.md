@@ -15,6 +15,7 @@ model: claude-sonnet-4-6
 
 - **팀장**: `leader.md` — 뚝딱이 (개발 전반)
 - **탐색담당**: `members/explorer.md` — 뒤적이 (코드 탐색)
+- **Unity 전담**: `members/unity-editor.md` — 유니티 (Unity Editor MCP 조작)
 
 ## 팀의 기본 원칙
 
