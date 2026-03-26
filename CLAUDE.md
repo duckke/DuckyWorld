@@ -61,9 +61,7 @@ model: claude-sonnet-4-6
 - git-commit 스킬은 **비서(메인 컨텍스트)만 호출**하며, 에이전트는 호출하지 않는다
 
 ## Claude Code 글로벌 설정 동기화
-
-글로벌 설정(`~/.claude/settings.json`, `statusline-command.sh`)은 별도 private repo로 관리한다.
-
+글로벌 설정(`~/.claude/`)은 별도 private repo로 관리한다.
 - **레포**: `github.com/duckke/.claude` (private)
 - **최신화**: `cd ~/.claude && git fetch && git reset --hard origin/main`
-- **설정 변경 후**: `cd ~/.claude && git add settings.json statusline-command.sh && git commit && git push`
+- **설정 변경 후**: `cd ~/.claude && git add -A && git commit && git push`
