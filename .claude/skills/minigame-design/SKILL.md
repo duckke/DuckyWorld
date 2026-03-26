@@ -16,7 +16,7 @@ description: 미니게임 크리/로직 토론으로 기획하고 개선한다.
 
 ## 실행
 
-**기획팀장** (`.claude/agents/design/leader.md`)에 위임한다.
+**촘촘이** (`.claude/agents/design/designer.md`)에 위임한다.
 에이전트 역할 정의는 각 에이전트 파일 참고 — 이 스킬에서 중복 기술하지 않는다.
 
 ## 토론 반환 포맷
