@@ -1,6 +1,6 @@
 ---
 name: DuckyWorld 스킬/에이전트 구조
-description: 스킬은 단일 SKILL.md (라우터 폐지), 에이전트는 역할별 분리 (design + develop)
+description: 스킬은 단일 SKILL.md 진입점, 에이전트는 역할 정의 — 라우터/서브스킬 구조 폐지
 type: project
 ---
 
@@ -17,18 +17,30 @@ type: project
 ### skills/
 ```
 skills/
-├── git-commit/SKILL.md      ← 커밋 메시지 형식 + 워크플로우
-└── minigame-design/SKILL.md  ← 크리/로직 토론 기반 기획
+├── git-commit/SKILL.md       ← 커밋 메시지 형식 + 워크플로우
+├── minigame-design/SKILL.md  ← 크리/로직 토론 기반 기획
+├── claude-env/SKILL.md       ← Claude 환경 검토/개선 → 깔끔이 위임
+└── notion-sync/SKILL.md      ← 기획서 md를 Notion에 동기화 → notion-editor 위임
 ```
 
 ### agents/
 ```
 agents/
-├── design/                   ← 기획/디자인 토론
-│   ├── creative.md           (크리 - 감성/재미/독창성)
-│   └── logic.md              (로직 - 밸런스/구현/일관성)
-└── develop/                  ← 개발 작업
-    ├── reviewer.md           (코드 리뷰)
-    ├── refactor.md           (리팩토링)
-    └── coder.md              (기능 구현)
+├── design/                   ← 기획 팀
+│   ├── leader.md             (꼼꼼이 - 기획 팀장)
+│   ├── team-rules.md         (기획팀 규칙)
+│   └── members/
+│       ├── explorer.md       (뒤적이 - 읽기 전용 탐색)
+│       └── notion-editor.md  (Notion 포매터)
+├── develop/                  ← 개발 팀
+│   ├── leader.md             (뚝딱이 - 개발 팀장)
+│   ├── team-rules.md         (개발팀 규칙)
+│   └── members/
+│       ├── explorer.md       (뒤적이 - 읽기 전용 탐색)
+│       └── unity-editor.md   (유니티 - Unity Editor MCP 조작)
+└── pm/                       ← PM 팀
+    ├── leader.md             (깔끔이 - PM 팀장)
+    ├── team-rules.md         (PM팀 규칙)
+    └── members/
+        └── explorer.md       (뒤적이 - 읽기 전용 탐색)
 ```
