@@ -4,7 +4,6 @@
 - `.claude/agents/` — 에이전트 파일
 - `.claude/skills/` — 스킬 파일 (SKILL.md)
 - `CLAUDE.md` — 프로젝트 지시 파일
-- `.claude/docs/current_state.md` (작업 완료 시 업데이트)
 
 ## 검토 항목
 - 파일 간 참조 경로 정확성
@@ -14,6 +13,5 @@
 - 역할별 규칙 파일의 명확성과 중복 제거
 
 ## 작업 규칙
-- 구조 변경 후 `.claude/docs/current_state.md` 업데이트 필수
 - 모든 구조 개선은 **역할·책임 명확화**를 우선
 - 파일명은 **영문**으로만 작성

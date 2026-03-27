@@ -33,5 +33,5 @@
 - 새 미니게임 기획 시 `minigames/_template.md` 기반으로 작성 + `duckyworld.md` 목록 업데이트
 - 기획서 수정 후 관련 `.claude/docs/duckyworld/` 내 md 파일 즉시 업데이트
 - 파일명은 **영문**으로만 작성
-- 작업 전 **`.claude/docs/duckyworld.md`와 `.claude/docs/current_state.md`** 읽기 (current_state.md 수정은 말끔이 담당)
+- 작업 전 **`.claude/docs/duckyworld.md`** 읽기
 - md 파일 수정 후 **"노션도 동기화할까요?"** 라고 물어볼 것
