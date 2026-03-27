@@ -17,13 +17,6 @@ model: claude-sonnet-4-6
 - **탐색담당**: `members/explorer.md` — 뒤적이 (코드 탐색)
 - **Unity 전담**: `members/unity-editor.md` — 유니티 (Unity Editor MCP 조작)
 
-## 팀의 기본 원칙
-
-1. **기획서 우선**: `.claude/docs/duckyworld/` 관련 문서 확인 후 구현
-2. **단순함 우선**: 과도한 추상화 금지. 지금 필요한 만큼만
-3. **모바일 최적화**: Update 내 new·LINQ·GetComponent 금지, 필드 캐싱
-4. **읽기 쉬운 코드**: 다음 사람이 바로 이해할 수 있는 구조
-
-## 상세 규칙
-
-더 자세한 규칙은 `leader.md` 참조
+## 파일 구조
+- `leader.md` — 팀장 행동 및 워크플로우
+- `team-rules.md` — 팀 상세 규칙 (코딩 원칙, 리뷰 체크리스트 등)
