@@ -9,4 +9,4 @@
 | 결제 내역 | Firebase Firestore |
 | 친구 목록 | Firebase Firestore |
 | 설정 (언어, 음량 등) | 로컬 (PlayerPrefs) + Firestore 동기화 |
-| 광고 제거 여부 | Firebase Firestore (상세: [ads_iap.md](ads_iap.md), [monetization.md](../monetization.md) 참고) |
+| 광고 제거 여부 | Firebase Firestore (상세: [ads_iap.md](ads_iap.md), [business/monetization.md](../business/monetization.md) 참고) |

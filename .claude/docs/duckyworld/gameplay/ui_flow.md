@@ -20,7 +20,7 @@ Lobby 또는 GameSelect로 복귀
 
 - 캐릭터가 뛰어노는 3D 씬
 - 메인 캐릭터 선택 가능
-- UI 컬러 테마 상세: [art_style.md](../art_style.md) 참고
+- UI 컬러 테마 상세: [art/art_style.md](../art/art_style.md) 참고
 
 ## 게임 선택
 

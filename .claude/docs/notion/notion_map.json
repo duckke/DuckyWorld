@@ -4,15 +4,19 @@
   "pages": {
     "duckyworld.md": "32ab283d-cb5f-81f6-ad38-cac585a46e4f",
     "duckyworld": {
-      "concept.md": "32ab283d-cb5f-8190-9c72-e4abc52a5f37",
-      "art_style.md": "32ab283d-cb5f-811e-83b3-c5de856e8dae",
-      "monetization.md": "32ab283d-cb5f-8182-b2e1-db19e3ce69d4",
+      "overview": {
+        "concept.md": "32ab283d-cb5f-8190-9c72-e4abc52a5f37"
+      },
+      "art": {
+        "art_style.md": "32ab283d-cb5f-811e-83b3-c5de856e8dae"
+      },
+      "business": {
+        "monetization.md": "32ab283d-cb5f-8182-b2e1-db19e3ce69d4"
+      },
       "gameplay": {
         "ui_flow.md": "32ab283d-cb5f-815d-b003-e8483cc2292f",
         "account.md": "32ab283d-cb5f-816c-998f-cd85c73de610",
         "pvp.md": "32ab283d-cb5f-8150-8551-d994af4bfb5b",
-        "ranking_season.md": "32ab283d-cb5f-81a2-92ac-f5cbd9b37c9c",
-        "tier.md": "32ab283d-cb5f-81b3-b0d6-def7969cfc21",
         "friends.md": "32ab283d-cb5f-81db-86aa-c81a8e2f3e43",
         "tutorial.md": "32ab283d-cb5f-8136-87af-e24a78e54a85"
       },

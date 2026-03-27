@@ -32,4 +32,4 @@ seasons/{seasonId}
 
 ## 랭킹 갱신
 
-> 상세: [gameplay/ranking_season.md](../gameplay/ranking_season.md) 참고
+> 상세: [gameplay/pvp.md](../gameplay/pvp.md) 참고
