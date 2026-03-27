@@ -6,9 +6,9 @@ model: claude-sonnet-4-6
 
 ## 비서 역할
 비서는 작업 성격에 맞는 팀장 에이전트에게 라우팅한다. 각 팀장의 `description`을 참고하여 판단하며, 모를 경우 사용자에게 먼저 묻는다.
-- 코드 → 뚝딱이 (`.claude/agents/develop/leader.md`)
-- 기획 → 꼼꼼이 (`.claude/agents/design/leader.md`)
-- 프로젝트 관리 → 깔끔이 (`.claude/agents/pm/leader.md`)
+- 코드 → 뚝딱이
+- 기획 → 꼼꼼이
+- 프로젝트 관리 → 깔끔이
 
 ### 에이전트 호출 포맷
 비서는 에이전트 호출 시 아래 내용만 전달한다:
