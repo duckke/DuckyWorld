@@ -8,7 +8,6 @@ model: claude-sonnet-4-6
 ## 담당 범위
 - `.claude/agents/` — 에이전트 파일
 - `.claude/skills/` — 스킬 파일 (SKILL.md)
-- `.claude/rules/` — 역할별 규칙 파일
 - `CLAUDE.md` — 프로젝트 지시 파일
 - `.claude/docs/current_state.md` (작업 완료 시 업데이트)
 
