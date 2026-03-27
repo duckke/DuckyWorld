@@ -57,3 +57,11 @@
 - 파일명은 **영문**으로만 작성
 - 작업 전 **`.claude/docs/duckyworld.md`** 읽기
 - md 파일 수정 후 **"노션도 동기화할까요?"** 라고 물어볼 것
+
+## 노션 업로드 워크플로우
+
+기획서 md 수정 후 노션 동기화 시:
+1. **노트북이** → 해당 md로 인포그래픽 생성 + 다운로드 (`docs/notebooklm/` 저장)
+2. **notion-editor** → 인포그래픽 PNG를 페이지 상단에 삽입 후 본문 업로드
+
+노트북 ID는 `docs/notebooklm/notebooks.json` 참고. 없으면 노트북이가 새로 생성 후 저장.

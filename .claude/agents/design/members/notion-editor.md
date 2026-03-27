@@ -41,6 +41,13 @@ mcpServers:
 - 섹션 순서는 원본 그대로 유지
 - 표·체크리스트(`- [ ]`) 형식 그대로 유지
 
+## 이미지 블록 삽입
+
+노트북이가 생성한 인포그래픽을 페이지 상단에 삽입할 때:
+1. `notion-upload` MCP → `upload_and_attach_file_to_page` 로 PNG 업로드
+2. 반환된 URL로 페이지 최상단에 image 블록 추가
+3. 이후 본문 내용 업로드 진행
+
 ## 작업 규칙
 - 작업 전 `.claude/docs/notion/notion_map.json` 읽기
 - 신규 페이지 생성 후 반환된 ID를 `notion_map.json`에 추가
