@@ -15,11 +15,14 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 NLM="notebooklm"
 NOTEBOOK_TITLE=""
 NOTEBOOK_ID=""
 NOTEBOOK_NAME=""
-OUTPUT_BASE="docs/notebooklm"
+OUTPUT_BASE="${PROJECT_ROOT}/.claude/docs/notebooklm"
 POLL_INTERVAL=10
 SOURCE_TIMEOUT=300
 ARTIFACT_TIMEOUT=1800
@@ -71,6 +74,23 @@ done
 OUTPUT_DIR="${OUTPUT_BASE}/${NOTEBOOK_NAME}"
 mkdir -p "$OUTPUT_DIR"
 
+# ── 5MB 초과 시 리사이즈 (원본 덮어쓰기) ──────────────────
+NOTION_SIZE_LIMIT=$((4800 * 1024))
+resize_if_needed() {
+  local file="$1"
+  local size
+  size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file")
+  [[ $size -le $NOTION_SIZE_LIMIT ]] && return 0
+
+  local width
+  width=$(sips -g pixelWidth "$file" 2>/dev/null | awk '/pixelWidth/{print $2}')
+  local new_width
+  new_width=$(python3 -c "import math; print(int($width * math.sqrt($NOTION_SIZE_LIMIT / $size) * 0.95))")
+
+  echo "  리사이즈: ${width}px → ${new_width}px ($(( size / 1024 / 1024 ))MB → ~5MB 이하)"
+  sips -Z "$new_width" "$file" --out "$file" > /dev/null 2>&1
+}
+
 # ── 파일 로테이션 함수 ─────────────────────────────────────
 # 같은 타입 파일이 MAX_FILES_PER_TYPE 이상이면 오래된 것 삭제
 rotate_files() {
@@ -79,12 +99,12 @@ rotate_files() {
   local type="$3"
   local ext="$4"
 
-  # 최신순 정렬 후 MAX 초과분 삭제
-  local -a files
-  mapfile -t files < <(ls -t "${dir}/${name}-${type}"-*.${ext} 2>/dev/null)
-  local count=${#files[@]}
+  # 최신순 정렬 후 MAX 초과분 삭제 (bash 3.2 호환)
+  local files count i delete_count
+  files=( $(ls -t "${dir}/${name}-${type}"-*.${ext} 2>/dev/null) )
+  count=${#files[@]}
   if [[ $count -ge $MAX_FILES_PER_TYPE ]]; then
-    local delete_count=$(( count - MAX_FILES_PER_TYPE + 1 ))
+    delete_count=$(( count - MAX_FILES_PER_TYPE + 1 ))
     for (( i=count-1; i>=count-delete_count; i-- )); do
       echo "  삭제 (오래된 파일): ${files[$i]}"
       rm -f "${files[$i]}"
@@ -195,6 +215,8 @@ for type in "${!TYPE_SOURCES[@]}"; do
     done
 
     extra_opts="${TYPE_OPTS[$type]:-}"
+    # 인포그래픽 기본 옵션: 정사각형 + 스케치노트 스타일 + 한국어
+    [[ "$type" == "infographic" && -z "$extra_opts" ]] && extra_opts="--orientation square --style sketch-note --language ko"
     prompt_arg="${TYPE_PROMPTS[$type]:-}"
     cmd="$NLM generate $type --notebook $NOTEBOOK_ID $src_flags $extra_opts --json"
     [[ -n "$prompt_arg" ]] && cmd="$cmd \"$prompt_arg\""
@@ -253,6 +275,9 @@ print(matched[0]['id'] if matched else '')
   $NLM download "$type" "$filepath" -a "$artifact_id" -n "$NOTEBOOK_ID" 2>/dev/null \
     && echo "  다운로드 완료: $filename" \
     || echo "  경고: $type 다운로드 실패"
+
+  # PNG인 경우 5MB 초과 시 리사이즈 (원본 덮어쓰기)
+  [[ "$ext" == "png" ]] && resize_if_needed "$filepath"
 
   DOWNLOADED+=("$filepath")
 done

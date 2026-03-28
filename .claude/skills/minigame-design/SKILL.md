@@ -1,6 +1,6 @@
 ---
 name: minigame-design
-description: 미니게임 크리/로직 토론으로 기획하고 개선한다.
+description: 미니게임 기획하고 개선한다.
 ---
 
 # 미니게임 디자인

@@ -1,9 +1,14 @@
 ---
 model: claude-haiku-4-5-20251001
 mcpServers:
-  - notion:
-      type: http
-      url: https://mcp.notion.com/mcp
+  notion:
+    type: http
+    url: https://mcp.notion.com/mcp
+  notion-upload:
+    type: stdio
+    command: /Users/duck/.local/pipx/venvs/notebooklm-py/bin/python
+    args:
+      - /Users/duck/.claude/mcp/mcp_notion_upload/mcp_notion_upload.py
 ---
 
 # notion-editor
@@ -43,14 +48,23 @@ mcpServers:
 
 ## 이미지 블록 삽입
 
-노트북이가 생성한 인포그래픽을 페이지 상단에 삽입할 때:
-1. `notion-upload` MCP → `upload_and_attach_file_to_page` 로 PNG 업로드
-2. 반환된 URL로 페이지 최상단에 image 블록 추가
+노트북이가 생성한 인포그래픽을 페이지 상단에 **인라인 이미지**로 삽입할 때:
+1. `mcp__notion-upload__upload_file_to_notion` 툴로 PNG 업로드 → `file_upload_id` 획득
+2. Notion REST API로 image 블록 추가 (본문 업로드 전 먼저 실행):
+   ```bash
+   curl -s -X PATCH "https://api.notion.com/v1/blocks/<page_id>/children" \
+     -H "Authorization: Bearer $(python3 -c "import json; print(json.load(open('/Users/duck/.claude.json'))['mcpServers']['notion-upload']['env']['NOTION_API_TOKEN'])")" \
+     -H "Notion-Version: 2022-06-28" \
+     -H "Content-Type: application/json" \
+     -d '{"children":[{"type":"image","image":{"type":"file_upload","file_upload":{"id":"<file_upload_id>"}}}]}'
+   ```
 3. 이후 본문 내용 업로드 진행
+※ `upload_and_attach_file_to_page` 사용 금지 — 파일 첨부 블록이 생성됨
 
 ## 작업 규칙
 - 작업 전 `.claude/docs/notion/notion_map.json` 읽기
 - 신규 페이지 생성 후 반환된 ID를 `notion_map.json`에 추가
 
 ## 반환 형식
-Notion Flavored Markdown. 변환된 본문만 출력, 설명·코멘트 없음.
+- 실행한 작업 결과 요약
+- 작업페이지 경로 명시

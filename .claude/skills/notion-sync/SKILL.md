@@ -1,6 +1,6 @@
 ---
 name: notion-sync
-description: 기획서 md를 Notion 페이지에 동기화한다.
+description: 기획서를 Notion 페이지에 동기화한다.
 ---
 
 # Notion 동기화 스킬

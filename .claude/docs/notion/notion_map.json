@@ -2,46 +2,46 @@
   "base_doc_path": ".claude/docs",
   "_comment": "pages 트리: 각 노드는 notion_id(문자열) 또는 하위 노드(객체). 경로는 base_doc_path 기준 상대경로.",
   "pages": {
-    "duckyworld.md": "32ab283d-cb5f-81f6-ad38-cac585a46e4f",
+    "duckyworld.md": "330b283d-cb5f-8082-8a91-ce2171eaf6c6",
     "duckyworld": {
       "overview": {
-        "concept.md": "32ab283d-cb5f-8190-9c72-e4abc52a5f37"
+        "concept.md": null
       },
       "art": {
-        "art_style.md": "32ab283d-cb5f-811e-83b3-c5de856e8dae"
+        "art_style.md": null
       },
       "business": {
-        "monetization.md": "32ab283d-cb5f-8182-b2e1-db19e3ce69d4"
+        "monetization.md": null
       },
       "gameplay": {
-        "ui_flow.md": "32ab283d-cb5f-815d-b003-e8483cc2292f",
-        "account.md": "32ab283d-cb5f-816c-998f-cd85c73de610",
-        "pvp.md": "32ab283d-cb5f-8150-8551-d994af4bfb5b",
-        "friends.md": "32ab283d-cb5f-81db-86aa-c81a8e2f3e43",
-        "tutorial.md": "32ab283d-cb5f-8136-87af-e24a78e54a85"
+        "ui_flow.md": null,
+        "account.md": null,
+        "pvp.md": null,
+        "friends.md": null,
+        "tutorial.md": null
       },
       "systems": {
-        "economy.md": "32ab283d-cb5f-8167-8172-cccfd3f1cf54",
-        "character.md": "32ab283d-cb5f-81f5-ac8f-d212d8c22a8d",
-        "equipment.md": "32ab283d-cb5f-8181-bc16-dc1fb2b94b4b"
+        "economy.md": null,
+        "character.md": null,
+        "equipment.md": null
       },
       "technology": {
-        "architecture.md": "32ab283d-cb5f-8141-97d6-c090c103a9b7",
-        "backend_firebase.md": "32ab283d-cb5f-81cb-86f7-e0fa166daa50",
-        "networking_photon.md": "32ab283d-cb5f-8159-99e3-cb8463ee8efb",
-        "scene_structure.md": "32ab283d-cb5f-811a-a8e0-d488e54576f8",
-        "data_storage.md": "32ab283d-cb5f-814d-a4fa-c44ad147f8c9",
-        "localization.md": "32ab283d-cb5f-813f-aa03-c4d27304bd7c",
-        "ads_iap.md": "32ab283d-cb5f-81b1-a17e-ff447820f755"
+        "architecture.md": null,
+        "backend_firebase.md": null,
+        "networking_photon.md": null,
+        "scene_structure.md": null,
+        "data_storage.md": null,
+        "localization.md": null,
+        "ads_iap.md": null
       },
       "minigames": {
-        "01_thump_thump_slope.md": "32ab283d-cb5f-8117-9e1f-d5df0ad14094",
-        "02_flap_flap.md": "32ab283d-cb5f-8105-b23e-c7fccc3b94b1",
-        "03_waddle_sprint.md": "32ab283d-cb5f-8143-8c34-c66f44be81d3",
-        "04_hoppy_forest.md": "32ab283d-cb5f-8110-b41c-ed258236f877",
-        "05_slide_run.md": "32ab283d-cb5f-8186-b8f9-f11dfa2601be",
-        "06_narrow_path.md": "32ab283d-cb5f-81c4-a886-db495ffbbfd9",
-        "07_villain_dodge.md": "32ab283d-cb5f-81f9-917a-f4ca07f83528"
+        "01_thump_thump_slope.md": null,
+        "02_flap_flap.md": null,
+        "03_waddle_sprint.md": null,
+        "04_hoppy_forest.md": null,
+        "05_slide_run.md": null,
+        "06_narrow_path.md": null,
+        "07_villain_dodge.md": null
       }
     }
   }
