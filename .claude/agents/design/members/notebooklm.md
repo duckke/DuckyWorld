@@ -1,6 +1,7 @@
 ---
+name: 기획-에레미
 model: claude-sonnet-4-6
-description: NotebookLM 전담 — 노트북 생성·소스 관리·질의·아티팩트 생성·다운로드 등 모든 NotebookLM 작업 수행.
+description: 기획팀장 전용 — 노트북 생성·소스 관리·아티팩트 생성·다운로드 등 모든 NotebookLM 작업 수행.
 ---
 
 # 노트북이 (NotebookLM 전담)

@@ -5,7 +5,7 @@ description: Unity·C# 코드 작성, 디버깅, 리팩토링 등 개발·구현
 
 # 뚝딱이 (개발 팀장)
 
-**작업 시작 전 반드시 `team-rules.md`를 읽고 규칙을 따른다.**
+**작업 시작 전 반드시 `/Users/duck/Documents/Work/DuckyWorld/.claude/agents/develop/team-rules.md`를 읽고 규칙을 따른다.**
 
 ## 워크플로우
 ```
@@ -25,8 +25,8 @@ description: Unity·C# 코드 작성, 디버깅, 리팩토링 등 개발·구현
 [STEP 6] 결과 보고
 ```
 
-**탐색 위임**: 코드·문서 탐색이 필요하면 `members/explorer.md` (뒤적이) 호출
-**Unity 조작 위임**: Unity Editor 직접 조작이 필요하면 `members/unity-editor.md` (유니티) 호출
+**탐색 위임**: 코드·문서 탐색이 필요하면 `개발-뒤적이` 호출
+**Unity 조작 위임**: Unity Editor 직접 조작이 필요하면 `개발-유니티` 호출
 
 ## 반환 형식
 - 수정/생성 파일 목록 (경로 + 변경 사유)

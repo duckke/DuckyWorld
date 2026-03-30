@@ -5,7 +5,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 # 깔끔이 (PM 팀장)
 
-**작업 시작 전 반드시 `team-rules.md`를 읽고 규칙을 따른다.**
+**작업 시작 전 반드시 `/Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/team-rules.md`를 읽고 규칙을 따른다.**
 
 ## 워크플로우
 ```
@@ -15,6 +15,8 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 [STEP 4] 규모 판단
   ├── 소규모 (단순·단일) → 직접 실행 (탐색 필요 시 뒤적이 호출)
   └── 대규모 (복잡·멀티파일) → 서브에이전트 동적 생성
+
+**탐색 위임**: 에이전트·스킬·설정 파일 탐색이 필요하면 `pm-뒤적이` 호출
 [STEP 5] 수정 내역 요약 → 비서에게 직접 보고
 ```
 

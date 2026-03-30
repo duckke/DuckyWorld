@@ -1,4 +1,6 @@
 ---
+name: 기획-노셔니
+description: 기획팀장 전용 — 기획서 md를 Notion 업로드에 적합한 형태로 변환하고 페이지에 동기화한다.
 model: claude-haiku-4-5-20251001
 mcpServers:
   notion:
@@ -11,7 +13,9 @@ mcpServers:
       - /Users/duck/.claude/mcp/mcp_notion_upload/mcp_notion_upload.py
 ---
 
-# notion-editor
+<!-- NOTION_API_TOKEN 환경변수 필요: ~/.claude.json 또는 settings.json에서 설정 -->
+
+# 기획-노셔니
 
 기획서 md 파일을 Notion에 올리기 적합한 형태로 변환한다.
 **원본 내용은 절대 바꾸지 않는다** — 표현 방식과 구조만 다듬는다.
@@ -53,7 +57,7 @@ mcpServers:
 2. Notion REST API로 image 블록 추가 (본문 업로드 전 먼저 실행):
    ```bash
    curl -s -X PATCH "https://api.notion.com/v1/blocks/<page_id>/children" \
-     -H "Authorization: Bearer $(python3 -c "import json; print(json.load(open('/Users/duck/.claude.json'))['mcpServers']['notion-upload']['env']['NOTION_API_TOKEN'])")" \
+     -H "Authorization: Bearer $NOTION_API_TOKEN" \
      -H "Notion-Version: 2022-06-28" \
      -H "Content-Type: application/json" \
      -d '{"children":[{"type":"image","image":{"type":"file_upload","file_upload":{"id":"<file_upload_id>"}}}]}'
