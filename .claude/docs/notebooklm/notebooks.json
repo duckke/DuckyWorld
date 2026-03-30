@@ -1,3 +1,152 @@
 {
-  "duckyworld": "b43c8c4d-309d-4803-b483-e7a67c5255c6"
+  "base_doc_path": ".claude/docs",
+  "_comment": "notebooks 트리: 각 노드는 {name, id, url} 객체. 경로는 base_doc_path 기준 상대경로.",
+  "notebooks": {
+    "duckyworld.md": {
+      "name": "덕키월드 - 메인기획서",
+      "id": "f80c7e36-d4a5-4de4-987f-006e2ce733f5",
+      "url": "https://notebooklm.google.com/notebook/f80c7e36-d4a5-4de4-987f-006e2ce733f5"
+    },
+    "duckyworld": {
+      "overview": {
+        "concept.md": {
+          "name": "개요 - 컨셉",
+          "id": "e98a0b31-00e4-4400-91ce-4153372a8160",
+          "url": "https://notebooklm.google.com/notebook/e98a0b31-00e4-4400-91ce-4153372a8160"
+        }
+      },
+      "art": {
+        "art_style.md": {
+          "name": "아트 - 아트스타일",
+          "id": "405b351d-1890-4599-a209-cfe7fdedd153",
+          "url": "https://notebooklm.google.com/notebook/405b351d-1890-4599-a209-cfe7fdedd153"
+        }
+      },
+      "business": {
+        "monetization.md": {
+          "name": "비즈니스 - 수익화 모델",
+          "id": "697c09ee-4107-406d-8d2a-2be38cadf14b",
+          "url": "https://notebooklm.google.com/notebook/697c09ee-4107-406d-8d2a-2be38cadf14b"
+        }
+      },
+      "gameplay": {
+        "ui_flow.md": {
+          "name": "게임플레이 - UI 흐름",
+          "id": "571ff7ea-db93-4507-8156-bebf369edcd0",
+          "url": "https://notebooklm.google.com/notebook/571ff7ea-db93-4507-8156-bebf369edcd0"
+        },
+        "account.md": {
+          "name": "게임플레이 - 계정 시스템",
+          "id": "dbc699de-78fd-4c25-9068-b6c8a2dcb433",
+          "url": "https://notebooklm.google.com/notebook/dbc699de-78fd-4c25-9068-b6c8a2dcb433"
+        },
+        "pvp.md": {
+          "name": "게임플레이 - PvP 대전",
+          "id": "e0c2c722-1053-47ac-9db8-6d7299915cd3",
+          "url": "https://notebooklm.google.com/notebook/e0c2c722-1053-47ac-9db8-6d7299915cd3"
+        },
+        "friends.md": {
+          "name": "게임플레이 - 친구 시스템",
+          "id": "a48e7a67-f8f2-4061-ba9a-e836b69e2cd5",
+          "url": "https://notebooklm.google.com/notebook/a48e7a67-f8f2-4061-ba9a-e836b69e2cd5"
+        },
+        "tutorial.md": {
+          "name": "게임플레이 - 튜토리얼",
+          "id": "4550c936-83a3-4b90-8a9b-fe7023176cae",
+          "url": "https://notebooklm.google.com/notebook/4550c936-83a3-4b90-8a9b-fe7023176cae"
+        }
+      },
+      "systems": {
+        "character.md": {
+          "name": "시스템 - 캐릭터",
+          "id": "c695e6e9-188f-4684-9f80-1b84b2cd6be3",
+          "url": "https://notebooklm.google.com/notebook/c695e6e9-188f-4684-9f80-1b84b2cd6be3"
+        },
+        "economy.md": {
+          "name": "시스템 - 경제",
+          "id": "de31cf02-5f02-497c-9b6c-1b6f21069972",
+          "url": "https://notebooklm.google.com/notebook/de31cf02-5f02-497c-9b6c-1b6f21069972"
+        },
+        "equipment.md": {
+          "name": "시스템 - 장비",
+          "id": "32cdff98-1b3d-453c-8efa-73f574fa3161",
+          "url": "https://notebooklm.google.com/notebook/32cdff98-1b3d-453c-8efa-73f574fa3161"
+        }
+      },
+      "technology": {
+        "architecture.md": {
+          "name": "기술 - 기술스택",
+          "id": "0adf27a4-a602-4614-8875-ed81f429ba4c",
+          "url": "https://notebooklm.google.com/notebook/0adf27a4-a602-4614-8875-ed81f429ba4c"
+        },
+        "backend_firebase.md": {
+          "name": "기술 - 파이어베이스",
+          "id": "5563fd87-4c42-4ef2-9df7-9984afb3f759",
+          "url": "https://notebooklm.google.com/notebook/5563fd87-4c42-4ef2-9df7-9984afb3f759"
+        },
+        "networking_photon.md": {
+          "name": "기술 - 네트워크",
+          "id": "8c8f2390-2df3-41ca-8158-1d6613f966ff",
+          "url": "https://notebooklm.google.com/notebook/8c8f2390-2df3-41ca-8158-1d6613f966ff"
+        },
+        "scene_structure.md": {
+          "name": "기술 - 씬 구조",
+          "id": "d7029c5a-b1cd-46fd-b38a-9ba748d51dac",
+          "url": "https://notebooklm.google.com/notebook/d7029c5a-b1cd-46fd-b38a-9ba748d51dac"
+        },
+        "data_storage.md": {
+          "name": "기술 - 데이터 저장",
+          "id": "cfbf002e-ee04-49a2-bafd-d5298988eecd",
+          "url": "https://notebooklm.google.com/notebook/cfbf002e-ee04-49a2-bafd-d5298988eecd"
+        },
+        "localization.md": {
+          "name": "기술 - 로컬라이제이션",
+          "id": "a80e54f7-f70e-4683-af00-c923c88c4346",
+          "url": "https://notebooklm.google.com/notebook/a80e54f7-f70e-4683-af00-c923c88c4346"
+        },
+        "ads_iap.md": {
+          "name": "기술 - 광고 인앱결제",
+          "id": "0d7ae028-3446-4572-b0a3-3ca8bc6f6a92",
+          "url": "https://notebooklm.google.com/notebook/0d7ae028-3446-4572-b0a3-3ca8bc6f6a92"
+        }
+      },
+      "minigames": {
+        "01_thump_thump_slope.md": {
+          "name": "미니게임 - 두근두근 슬로프",
+          "id": "7f7891dc-e5ad-434f-8d98-b5fdfb65850c",
+          "url": "https://notebooklm.google.com/notebook/7f7891dc-e5ad-434f-8d98-b5fdfb65850c"
+        },
+        "02_flap_flap.md": {
+          "name": "미니게임 - 퍼덕퍼덕",
+          "id": "b0694f2f-ea89-4bfc-a3f4-a96047a09015",
+          "url": "https://notebooklm.google.com/notebook/b0694f2f-ea89-4bfc-a3f4-a96047a09015"
+        },
+        "03_waddle_sprint.md": {
+          "name": "미니게임 - 뒤뚱뒤뚱 질주",
+          "id": "390091f2-7be3-4a15-a4e4-0275d03b7ccd",
+          "url": "https://notebooklm.google.com/notebook/390091f2-7be3-4a15-a4e4-0275d03b7ccd"
+        },
+        "04_hoppy_forest.md": {
+          "name": "미니게임 - 폴짝폴짝 포레스트",
+          "id": "b0a55e54-3011-4a3c-b1f5-35f05b8eb4c7",
+          "url": "https://notebooklm.google.com/notebook/b0a55e54-3011-4a3c-b1f5-35f05b8eb4c7"
+        },
+        "05_slide_run.md": {
+          "name": "미니게임 - 슬라이드런",
+          "id": "7fb4f412-eed9-4eda-a8d4-0827c6e3a90b",
+          "url": "https://notebooklm.google.com/notebook/7fb4f412-eed9-4eda-a8d4-0827c6e3a90b"
+        },
+        "06_narrow_path.md": {
+          "name": "미니게임 - 아슬아슬 좁은길",
+          "id": "099fd944-eabb-4d51-84d6-5642355d8407",
+          "url": "https://notebooklm.google.com/notebook/099fd944-eabb-4d51-84d6-5642355d8407"
+        },
+        "07_villain_dodge.md": {
+          "name": "미니게임 - 피해피해 악당오리",
+          "id": "a84e0ff2-d95b-49fb-a892-0341aacc42ae",
+          "url": "https://notebooklm.google.com/notebook/a84e0ff2-d95b-49fb-a892-0341aacc42ae"
+        }
+      }
+    }
+  }
 }
