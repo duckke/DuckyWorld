@@ -1,5 +1,5 @@
 ---
-name: notebooklm
+name: duck-notebooklm
 description: NotebookLM 작업을 노트북이 에이전트와 대화하며 진행한다.
 ---
 
