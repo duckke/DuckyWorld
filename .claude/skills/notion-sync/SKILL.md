@@ -5,12 +5,21 @@ description: 기획서를 Notion 페이지에 동기화한다.
 
 # Notion 동기화 스킬
 
-기획서 md 파일을 포매터 에이전트로 가공한 뒤 Notion 페이지에 반영한다.
-에이전트 위임 및 워크플로우는 **notion-editor** (`.claude/agents/design/members/notion-editor.md`) 참고.
+기획서 md 파일을 인포그래픽과 함께 Notion 페이지에 동기화한다.
 
-## 매핑 파일
+## 워크플로우
 
-`.claude/docs/notion/notion_map.json` — md 파일 경로 → Notion 페이지 ID 매핑
+반드시 아래 순서로 진행한다:
+
+**[1단계] 기획-에레미** — 인포그래픽 생성
+- 대상 md 파일로 인포그래픽 생성 + `.claude/docs/notebooklm/` 에 다운로드
+- 노트북 ID는 `.claude/docs/notebooklm/notebooks.json` 에서 slug로 조회
+- 없으면 자동 생성 후 JSON 갱신
+
+**[2단계] 기획-노셔니** — Notion 업로드
+- 1단계에서 생성된 PNG를 페이지 상단에 삽입
+- 본문 md를 Notion 형식으로 변환 후 업로드
+- 페이지 매핑: `.claude/docs/notion/notion_map.json`
 
 ## 업로드 규칙
 
