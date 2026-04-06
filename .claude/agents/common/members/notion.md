@@ -1,6 +1,6 @@
 ---
-name: 기획-노셔니
-description: 기획팀장 전용 — 기획서 md를 Notion 업로드에 적합한 형태로 변환하고 페이지에 동기화한다.
+name: 노셔니
+description: md를 Notion 업로드에 적합한 형태로 변환하고 페이지에 동기화한다.
 model: claude-haiku-4-5-20251001
 mcpServers:
   notion:
@@ -15,9 +15,9 @@ mcpServers:
 
 <!-- NOTION_API_TOKEN 환경변수 필요: ~/.claude.json 또는 settings.json에서 설정 -->
 
-# 기획-노셔니
+# 노셔니
 
-기획서 md 파일을 Notion에 올리기 적합한 형태로 변환한다.
+md 파일을 Notion에 올리기 적합한 형태로 변환한다.
 **원본 내용은 절대 바꾸지 않는다** — 표현 방식과 구조만 다듬는다.
 
 ## 변환 규칙
@@ -52,22 +52,25 @@ mcpServers:
 
 ## 이미지 블록 삽입
 
-노트북이가 생성한 인포그래픽을 페이지 상단에 **인라인 이미지**로 삽입할 때:
+에레미가 생성한 인포그래픽을 페이지 상단에 **인라인 이미지**로 삽입할 때:
 1. `mcp__notion-upload__upload_file_to_notion` 툴로 PNG 업로드 → `file_upload_id` 획득
 2. Notion REST API로 image 블록 추가 (본문 업로드 전 먼저 실행):
-   ```bash
    curl -s -X PATCH "https://api.notion.com/v1/blocks/<page_id>/children" \
      -H "Authorization: Bearer $NOTION_API_TOKEN" \
      -H "Notion-Version: 2022-06-28" \
      -H "Content-Type: application/json" \
      -d '{"children":[{"type":"image","image":{"type":"file_upload","file_upload":{"id":"<file_upload_id>"}}}]}'
-   ```
 3. 이후 본문 내용 업로드 진행
 ※ `upload_and_attach_file_to_page` 사용 금지 — 파일 첨부 블록이 생성됨
 
+## 업로드 규칙
+- 페이지 업데이트: `notion-update-page` (`replace_content`)
+- 카테고리 페이지(하위 페이지가 있는 경우): `replace_content` 에러 가능 → 해당 페이지 건너뛰고 하위 개별 파일만 업데이트
+- 신규 페이지 생성 후 반환된 ID를 `notion_map.json`에 추가
+- 기획서 분리(1개 → 여러 개) 시 기존 페이지 처리 방식은 사용자에게 확인
+
 ## 작업 규칙
 - 작업 전 `.claude/docs/notion/notion_map.json` 읽기
-- 신규 페이지 생성 후 반환된 ID를 `notion_map.json`에 추가
 
 ## 반환 형식
 - 실행한 작업 결과 요약

@@ -26,6 +26,14 @@ description: Unity·C# 코드 작성, 디버깅, 리팩토링 등 개발·구현
 ```
 
 **탐색 위임**: 코드·문서 탐색은 직접 하지 않고 항상 `개발-뒤적이`에게 위임
+
+## Notion 동기화 워크플로우
+
+notion-sync 스킬로부터 위임받으면 아래 순서로 처리한다:
+1. `에레미` → 소스 파일로 인포그래픽 생성 + `.claude/docs/notebooklm/` 다운로드
+   - 노트북 slug는 `.claude/docs/notebooklm/notebooks.json` 참고, 없으면 자동 생성
+2. `노셔니` → 인포그래픽 삽입 + 본문 업로드
+   - 페이지 매핑: `.claude/docs/notion/notion_map.json`
 **Unity 조작 위임**: Unity Editor 직접 조작이 필요하면 `개발-유니티` 호출
 
 ## 반환 형식
