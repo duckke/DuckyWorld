@@ -214,7 +214,11 @@ while IFS= read -r src; do
     sid=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('source_id',''))" 2>/dev/null || echo "")
     safe_key=$(python3 -c "import sys; s=sys.argv[1]; print(''.join(c if c.isalnum() else '_' for c in s))" "$src")
     echo "$src=$sid" > "$WORK/src_ids/${safe_key}"
-    echo "  추가됨: $(basename "$src") → $sid"
+    if [[ -z "$sid" ]]; then
+      echo "  경고: 소스 추가 실패 → $(basename "$src")" >&2
+    else
+      echo "  추가됨: $(basename "$src") → $sid"
+    fi
   ) &
 done < "$WORK/all_sources"
 wait
@@ -229,7 +233,16 @@ import sys, json
 srcs = json.load(sys.stdin).get('sources', [])
 print(sum(1 for s in srcs if s.get('status') != 'ready'))
 " 2>/dev/null || echo "1")
-  [[ "$NOT_READY" -eq 0 ]] && { echo "  모든 소스 ready"; break; }
+  if [[ "$NOT_READY" -eq 0 ]]; then
+    READY_COUNT=$($NLM source list -n "$NOTEBOOK_ID" --json 2>/dev/null \
+      | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('sources',[])))" 2>/dev/null || echo "0")
+    if [[ "$READY_COUNT" -lt "$SRC_TOTAL" ]]; then
+      echo "  경고: 소스 ${SRC_TOTAL}개 중 ${READY_COUNT}개만 등록됨" >&2
+    else
+      echo "  모든 소스 ready (${READY_COUNT}개)"
+    fi
+    break
+  fi
   [[ $ELAPSED -ge $SOURCE_TIMEOUT ]] && { echo "오류: 소스 처리 타임아웃 (${SOURCE_TIMEOUT}s)" >&2; exit 1; }
   sleep $POLL_INTERVAL
   ELAPSED=$((ELAPSED + POLL_INTERVAL))
@@ -267,7 +280,7 @@ while IFS= read -r type; do
     [[ -n "$extra_opts" ]] && cmd+=($extra_opts)
 
     prompt_file="$WORK/prompt_${type}"
-    [[ -f "$prompt_file" ]] && cmd+=("$(cat "$prompt_file")")
+    [[ -f "$prompt_file" ]] && cmd+=(--prompt "$(cat "$prompt_file")")
 
     result=$("${cmd[@]}" 2>/dev/null)
     task_id=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('task_id',''))" 2>/dev/null || echo "")

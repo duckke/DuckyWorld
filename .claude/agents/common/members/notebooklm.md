@@ -32,6 +32,23 @@ bash /Users/duck/Documents/Work/DuckyWorld/.claude/scripts/nlm_batch.sh \
   --infographic-sources "docs/duckyworld.md" \
   --report-sources "docs/duckyworld.md"
 
+### 지원 아티팩트 타입
+
+| 타입 | 플래그 | 출력 형식 |
+|------|--------|-----------|
+| `infographic` | `--infographic-sources` | PNG |
+| `report` | `--report-sources` | Markdown |
+| `audio` | `--audio-sources` | MP3 |
+| `video` | `--video-sources` | MP4 |
+| `cinematic-video` | `--cinematic-video-sources` | MP4 |
+| `slide-deck` | `--slide-deck-sources` | PDF |
+| `mind-map` | `--mind-map-sources` | JSON |
+| `data-table` | `--data-table-sources` | CSV |
+| `quiz` | `--quiz-sources` | JSON |
+| `flashcards` | `--flashcards-sources` | JSON |
+
+추가 옵션: `--TYPE-opts "플래그들"`, `--TYPE-prompt "지시사항"`
+
 ### notebooks.json slug 규칙
 
 - 파일명 기반으로 영문 slug 사용 (예: `flap_flap`, `duckyworld`, `concept`)
