@@ -350,12 +350,13 @@ public class Appendage
 
 ```csharp
 // 충돌체 하나의 데이터 (struct, 불변)
+// float3 사용 (Unity.Mathematics) — Burst 호환 필수
 public struct LogicColliderData
 {
     public ColliderBoxType boxType;   // Attack, Damage, Guard
     public ColliderShape shape;       // AABB, Circle, Capsule
-    public Vector3 offset;            // 오브젝트 기준 상대 좌표
-    public Vector3 size;              // 반크기 (AABB) 또는 x=반지름 (Circle)
+    public float3 offset;             // 오브젝트 기준 상대 좌표
+    public float3 size;               // 반크기 (AABB) 또는 x=반지름 (Circle)
     public int value;                 // 공격력, 가드 수치 등
 }
 
@@ -409,101 +410,179 @@ public enum CollisionLayer
 
 ### 5-3. CollisionManager
 
+충돌 감지(BroadPhase + NarrowPhase)는 Burst Job으로 처리. 결과는 같은 프레임 내 postProc에서 소비.
+
 ```csharp
-public class CollisionManager
+// Job에 넘기는 경량 스냅샷 (class 참조 없음, Burst 호환)
+public struct ColliderSnapshot
 {
-    // 사전 할당 결과 버퍼 (GC 제로)
-    CollisionResult[] hitResults;   // 시작 시 new[256]
-    int hitCount;
-    
-    // mainProc에서 호출 — 감지만, 처리는 안 함
-    public void CheckCollisions(List<ObjectBase> objects)
+    public int objectIndex;          // objects[] 인덱스 (결과 처리용)
+    public float3 position;
+    public int facingDirection;
+    public int collisionLayer;
+    public int collisionMask;
+    public int colliderStartIndex;   // AnimationColliderData.allColliders 인덱스
+    public int colliderCount;
+}
+
+// 충돌 결과 (struct, Job 출력)
+public struct CollisionResult
+{
+    public int indexA;               // ColliderSnapshot.objectIndex
+    public int indexB;
+    public ColliderBoxType boxTypeA;
+    public ColliderBoxType boxTypeB;
+    public int valueA;
+    public int valueB;
+}
+
+[BurstCompile]
+struct CollisionJob : IJob
+{
+    [ReadOnly] public NativeArray<ColliderSnapshot> snapshots;
+    [ReadOnly] public NativeArray<LogicColliderData> allColliders; // AnimationColliderData.allColliders
+    public NativeList<CollisionResult> results;
+
+    public void Execute()
     {
-        hitCount = 0;
-        
-        for (int i = 0; i < objects.Count; i++)
+        for (int i = 0; i < snapshots.Length; i++)
         {
-            if (objects[i] is not CollisionObject a) continue;
-            
-            for (int j = i + 1; j < objects.Count; j++)
+            for (int j = i + 1; j < snapshots.Length; j++)
             {
-                if (objects[j] is not CollisionObject b) continue;
-                
-                // 레이어 마스크 필터
-                if ((a.collisionMask & (int)b.collisionLayer) == 0 &&
-                    (b.collisionMask & (int)a.collisionLayer) == 0)
+                var a = snapshots[i];
+                var b = snapshots[j];
+
+                if ((a.collisionMask & b.collisionLayer) == 0 &&
+                    (b.collisionMask & a.collisionLayer) == 0)
                     continue;
-                
-                // NarrowPhase 판정
-                if (CheckOverlap(a, b, out var result))
+
+                // a의 활성 충돌체 vs b의 활성 충돌체
+                for (int ai = a.colliderStartIndex; ai < a.colliderStartIndex + a.colliderCount; ai++)
+                for (int bi = b.colliderStartIndex; bi < b.colliderStartIndex + b.colliderCount; bi++)
                 {
-                    hitResults[hitCount++] = result;
-                    if (hitCount >= hitResults.Length) return; // 버퍼 초과 방지
+                    var ca = allColliders[ai];
+                    var cb = allColliders[bi];
+
+                    float3 worldOffsetA = new float3(ca.offset.x * a.facingDirection, ca.offset.y, ca.offset.z);
+                    float3 worldOffsetB = new float3(cb.offset.x * b.facingDirection, cb.offset.y, cb.offset.z);
+
+                    if (CollisionHelper.Overlaps(a.position + worldOffsetA, ca,
+                                                  b.position + worldOffsetB, cb))
+                    {
+                        results.Add(new CollisionResult
+                        {
+                            indexA = a.objectIndex, indexB = b.objectIndex,
+                            boxTypeA = ca.boxType,  boxTypeB = cb.boxType,
+                            valueA = ca.value,      valueB = cb.value,
+                        });
+                    }
                 }
             }
         }
     }
-    
-    // postProc에서 호출 — 실제 결과 처리
-    public void ProcessResults()
+}
+
+public class CollisionManager
+{
+    NativeArray<ColliderSnapshot> snapshots;    // 프레임마다 채움
+    NativeArray<LogicColliderData> allColliders; // 로딩 시 1회 할당
+    NativeList<CollisionResult> results;
+
+    public void Init(LogicColliderData[] colliderTable, int maxObjects)
     {
-        for (int i = 0; i < hitCount; i++)
+        allColliders = new NativeArray<LogicColliderData>(colliderTable, Allocator.Persistent);
+        snapshots    = new NativeArray<ColliderSnapshot>(maxObjects, Allocator.Persistent);
+        results      = new NativeList<CollisionResult>(256, Allocator.Persistent);
+    }
+
+    public void Dispose()
+    {
+        allColliders.Dispose();
+        snapshots.Dispose();
+        results.Dispose();
+    }
+
+    // mainProc에서 호출 — 스냅샷 빌드 후 Job 실행
+    public void CheckCollisions(List<ObjectBase> objects)
+    {
+        int count = 0;
+        for (int i = 0; i < objects.Count; i++)
         {
-            var r = hitResults[i];
-            r.objectA.OnCollision(r.objectB);
-            r.objectB.OnCollision(r.objectA);
+            if (objects[i] is not CollisionObject co) continue;
+            snapshots[count++] = co.BuildSnapshot(i);
+        }
+
+        results.Clear();
+        var job = new CollisionJob
+        {
+            snapshots    = snapshots.GetSubArray(0, count),
+            allColliders = allColliders,
+            results      = results,
+        };
+        job.Schedule().Complete();
+    }
+
+    // postProc에서 호출 — 실제 결과 처리
+    public void ProcessResults(List<ObjectBase> objects)
+    {
+        for (int i = 0; i < results.Length; i++)
+        {
+            var r = results[i];
+            var a = objects[r.indexA] as CollisionObject;
+            var b = objects[r.indexB] as CollisionObject;
+            a?.OnCollision(b, r.boxTypeA, r.valueB);
+            b?.OnCollision(a, r.boxTypeB, r.valueA);
         }
     }
-    
-    bool CheckOverlap(CollisionObject a, CollisionObject b, out CollisionResult result)
-    {
-        // a의 활성 충돌체들 vs b의 활성 충돌체들
-        // AnimationColliderData에서 인덱스 범위로 접근
-        // CollisionHelper의 AABB/Circle 오버랩 함수 사용
-        // facingDirection에 따라 offset.x 미러링
-        ...
-    }
-}
-```
-
-```csharp
-// 충돌 결과 (struct)
-public struct CollisionResult
-{
-    public CollisionObject objectA;
-    public CollisionObject objectB;
-    public ColliderBoxType boxTypeA;  // A의 어떤 박스가 맞았는지
-    public ColliderBoxType boxTypeB;
-    public int valueA;                // A의 공격력 등
-    public int valueB;
 }
 ```
 
 ### 5-4. CollisionHelper (순수 수학)
 
+`[BurstCompile]` static 클래스. float3 (Unity.Mathematics) 사용. Burst Job 내부에서 직접 호출.
+
 ```csharp
+using Unity.Mathematics;
+using Unity.Burst;
+
+[BurstCompile]
 public static class CollisionHelper
 {
-    public static bool OverlapAABB(Vector3 posA, Vector3 sizeA, 
-                                    Vector3 posB, Vector3 sizeB)
+    // 진입점 — shape 조합 분기
+    public static bool Overlaps(float3 posA, in LogicColliderData a,
+                                 float3 posB, in LogicColliderData b)
     {
-        return Mathf.Abs(posA.x - posB.x) < sizeA.x + sizeB.x &&
-               Mathf.Abs(posA.y - posB.y) < sizeA.y + sizeB.y &&
-               Mathf.Abs(posA.z - posB.z) < sizeA.z + sizeB.z;
+        return (a.shape, b.shape) switch
+        {
+            (ColliderShape.AABB,   ColliderShape.AABB)   => OverlapAABB(posA, a.size, posB, b.size),
+            (ColliderShape.Circle, ColliderShape.Circle) => OverlapCircle(posA, a.size.x, posB, b.size.x),
+            (ColliderShape.AABB,   ColliderShape.Circle) => OverlapAABBvsCircle(posA, a.size, posB, b.size.x),
+            (ColliderShape.Circle, ColliderShape.AABB)   => OverlapAABBvsCircle(posB, b.size, posA, a.size.x),
+            _ => false,
+        };
     }
-    
-    public static bool OverlapCircle(Vector3 posA, float radiusA,
-                                      Vector3 posB, float radiusB)
+
+    static bool OverlapAABB(float3 posA, float3 sizeA, float3 posB, float3 sizeB)
     {
-        float dx = posA.x - posB.x;
-        float dy = posA.y - posB.y;
-        float r = radiusA + radiusB;
-        return (dx * dx + dy * dy) < (r * r); // sqrt 안 씀
+        var d = math.abs(posA - posB);
+        return d.x < sizeA.x + sizeB.x &&
+               d.y < sizeA.y + sizeB.y;
     }
-    
-    public static bool OverlapAABBvsCircle(...) { ... }
-    public static bool OverlapCapsule(...) { ... }
-    // 조합별 약 6~8개 함수
+
+    static bool OverlapCircle(float3 posA, float rA, float3 posB, float rB)
+    {
+        float3 d = posA - posB;
+        float r = rA + rB;
+        return d.x * d.x + d.y * d.y < r * r; // sqrt 안 씀
+    }
+
+    static bool OverlapAABBvsCircle(float3 boxPos, float3 boxSize, float3 circPos, float r)
+    {
+        float3 closest = math.clamp(circPos, boxPos - boxSize, boxPos + boxSize);
+        float3 d = circPos - closest;
+        return d.x * d.x + d.y * d.y < r * r;
+    }
+    // Capsule 등 추가 가능
 }
 ```
 
