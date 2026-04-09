@@ -120,6 +120,41 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | HoppyForest |
+| 입력 타입 (IGameInput) | TapInput (탭 1회 → 점프, 공중 탭 1회 추가 → 더블점프) |
+| 씬 | Games/HoppyForest.unity |
+| 폴더 | MiniGame/HoppyForest/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 장애물 충돌 또는 구멍 낙하 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### MapManager 구현체 (HoppyForestMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보**:
+  - 장애물 종류별 배치 규칙 (낮은/높은/구멍/통나무 플랫폼)
+  - 난이도 곡선 (속도 증가 + 장애물 간격 비례 확대)
+  - 속도-간격 연동: 속도가 빨라질수록 장애물 간격도 함께 넓어져 컨트롤 가능성 유지
+
+### 장애물 오브젝트
+
+- 낮은 장애물 (그루터기/바위/덤불): ObstacleBase (Instant)
+- 높은 장애물 (통나무 울타리/큰 버섯/나뭇가지): ObstacleBase (Instant)
+- 구멍 (절벽 틈/끊어진 나무다리): 별도 처리 (낙하 즉사)
+- 통나무 플랫폼: 올라타서 달리기 가능
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

@@ -23,3 +23,13 @@
 ### 강화
 - 골드 소비로 장비 강화
 - 강화 수치 증가 → 능력치 상승 + 특정 단계마다 외형/이펙트 변화
+
+## 코드 구조 (v4 기준)
+
+### Data / Info 분리
+- **EquipmentData** (Data/ 폴더): 데이터 테이블 원본, 불변
+- **EquipmentInfo** (Info/ 폴더): 런타임 가공 정보
+
+### 장비 장착
+- ActiveObject.equipment: `Dictionary<EquipPartType, EquipmentInfo>`
+- 장비 합산 스탯은 CharacterInfo에서 런타임 계산

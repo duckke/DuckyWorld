@@ -1,5 +1,9 @@
 # PvP 대전
 
+## 현재 상태
+
+> **네트워크(PvP)는 추후 고도화 단계에서 진행 (Phase 13). 현재는 싱글 플레이 우선 구현.**
+
 ## PvP 개요
 
 - 같은 미니게임을 두 명이 동시에 플레이
@@ -23,6 +27,18 @@
 ## PvP 능력치 적용 방침
 
 - **PvP에서도 능력치 / 장비 옵션 그대로 적용**
+
+## PvP 동기화 구조 (확정)
+
+- **결정론적 프레임 루프**: GameManager.gameTimer는 FRAME_TIME(0.0166667f) 단위로만 증가 → 양쪽 동일 결과 보장
+- **입력 동기화**: InputData.frameNumber 필드로 프레임 단위 입력 동기화
+- **InputData struct**: InputType(TouchDown/TouchMove/TouchUp/JoystickMove), fingerId, position, joystickValue, frameNumber
+- 싱글 플레이에서는 frameNumber를 무시해도 무방
+
+## 상대방 정보
+
+- **PlayerSimpleInfo**: playerId, playerName, level, selectedCharacterName — PvP 상대방 최소 정보
+- **PlayerInfo**: PlayerSimpleInfo 상속, 자기 자신 상세 정보 (xp, gold, ownedCharacters 등)
 
 ## 랭킹 시스템
 

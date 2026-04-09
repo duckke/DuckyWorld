@@ -22,3 +22,21 @@
 ### 캐릭터 경험치 / 레벨
 - 게임 플레이 시 경험치 획득
 - 레벨업 시 새로운 게임 또는 컨텐츠 오픈
+
+## 코드 구조 (v4 기준)
+
+### Data / Info 분리
+- **CharacterData** (Data/ 폴더): 데이터 테이블 원본, 불변 — 기본 스탯, 이름 등
+- **CharacterInfo** (Info/ 폴더): 런타임 가공 정보 — 현재 레벨, 장비 합산 스탯, xp, 스태미나 등
+
+### 오브젝트 계층
+- **CharacterBase** → ActiveObject 상속
+  - `characterInfo: CharacterInfo` (레벨, xp, 스태미나 등)
+  - 상태머신, Appendage(버프/디버프), Equipment 보유
+  - `moveSpeed`, `jumpForce`, `attackPower` 등 스탯
+  - `ApplyInput(InputData data)` — 입력 적용
+
+### 플레이어 정보
+- **PlayerInfo** → PlayerSimpleInfo 상속
+  - `ownedCharacters: List<CharacterInfo>` — 보유 캐릭터
+  - `selectedCharacter: CharacterInfo` — 선택된 캐릭터

@@ -124,6 +124,45 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | ThumpThumpSlope |
+| 입력 타입 (IGameInput) | TapInput (화면 터치 1회 → 방향 전환) |
+| 씬 | Games/ThumpThumpSlope.unity |
+| 폴더 | MiniGame/ThumpThumpSlope/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 즉사 장애물(나무) 충돌 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### MapManager 구현체 (ThumpThumpSlopeMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보**:
+  - 장애물 배치 규칙 (나무/눈사람/눈덩이 밀도, 간격)
+  - 난이도 곡선 (시간 → 스크롤 속도 증가 + 장애물 밀도 증가)
+  - 절차적 생성 로직 (랜덤 배치)
+
+### 장애물 오브젝트
+
+- 나무: ObstacleBase (obstacleEffectType: Instant, hp=0)
+- 눈사람: ObstacleBase (obstacleEffectType: Stun, effectValue: 0.3)
+- 눈덩이: PassiveObject (자체이동, obstacleEffectType: Stun, effectValue: 0.3)
+
+### 충돌 레이어
+
+- 캐릭터: CollisionLayer.Character, collisionMask = Obstacle
+- 장애물: CollisionLayer.Obstacle
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

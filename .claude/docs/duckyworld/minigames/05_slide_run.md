@@ -137,6 +137,45 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | SlideRun |
+| 입력 타입 (IGameInput) | SwipeInput (위 스와이프 → 점프, 아래 스와이프 → 슬라이딩) |
+| 씬 | Games/SlideRun.unity |
+| 폴더 | MiniGame/SlideRun/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 장애물 충돌 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### 입력 처리
+
+- InputManager에서 TouchDown 시 fingerId별 시작 position 저장
+- TouchUp 시 delta 방향으로 스와이프 판정 (위/아래)
+- 별도 SwipeInput 클래스는 입력 타입 선언 역할만 — 판정 로직은 InputManager에 집중
+
+### MapManager 구현체 (SlideRunMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보**:
+  - 바닥/공중 장애물 배치 규칙
+  - 연속 입력 요구 패턴 (점프 + 슬라이딩 연속)
+  - 난이도 곡선 (스크롤 속도 점진적 증가 + 복합 패턴 빈도 증가)
+
+### 장애물 오브젝트
+
+- 바닥 장애물 (박스/소화전/쓰레기통): ObstacleBase (Instant)
+- 공중 장애물 (간판/차단봉/천막): ObstacleBase (Instant)
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

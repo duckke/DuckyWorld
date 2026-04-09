@@ -110,6 +110,44 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | FlutterFlutter |
+| 입력 타입 (IGameInput) | TapInput (탭 → 날갯짓/상승) |
+| 씬 | Games/FlutterFlutter.unity |
+| 폴더 | MiniGame/FlutterFlutter/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 풍선 충돌 또는 화면 아래 낙하 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### MapManager 구현체 (FlutterFlutterMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보** (v4 예시 코드 참고):
+  - `pipeGap`: 풍선 간격
+  - `pipeSpawnInterval`: 풍선 생성 주기
+  - `difficultyTimer`: 난이도 상승 타이머
+  - 풍선 밀도/크기/위치 다양화 규칙
+
+### 장애물 오브젝트
+
+- 폭탄 풍선: ObstacleBase (obstacleEffectType: Instant, Y축 살랑살랑 움직임)
+
+### 충돌 레이어
+
+- 캐릭터: CollisionLayer.Character, collisionMask = Obstacle
+- 풍선: CollisionLayer.Obstacle
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

@@ -23,3 +23,11 @@
     ├─ 장비 강화
     └─ (추후 추가 검토)
 ```
+
+## 코드 구조 (v4 기준)
+
+- **CurrencyManager** (Economy/ 폴더): 재화 관리
+- **GachaSystem** (Economy/ 폴더): 뽑기 시스템
+- **RewardManager** (Economy/ 폴더): 보상 지급
+- PlayerInfo.gold: 골드 보유량
+- Firestore `users/{uid}.gold`에 서버 동기화

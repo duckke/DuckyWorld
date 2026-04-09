@@ -110,6 +110,40 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | NarrowPath |
+| 입력 타입 (IGameInput) | JoystickInput (가상 조이스틱 → 이동 방향 및 속도 조절) |
+| 씬 | Games/NarrowPath.unity |
+| 폴더 | MiniGame/NarrowPath/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 길 이탈(낙하) 또는 60초 타이머 초과 또는 도착 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### 입력 처리
+
+- InputData.joystickValue (Vector2, -1~1): 조이스틱 방향 + 크기
+- 기울기에 따라 이동 속도 비례 조절
+
+### MapManager 구현체 (NarrowPathMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보**:
+  - 길 폭 (구간별 점진적 감소)
+  - 커브 패턴 (각도, 빈도)
+  - 도착 지점 위치
+  - 60초 타이머 설정
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

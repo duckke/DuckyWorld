@@ -111,6 +111,49 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | DodgeVillain |
+| 입력 타입 (IGameInput) | JoystickInput (가상 조이스틱 → 4x4 격자 칸 이동) |
+| 씬 | Games/DodgeVillain.unity |
+| 폴더 | MiniGame/DodgeVillain/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 악당 오리 충돌 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### 입력 처리
+
+- InputData.joystickValue: 격자 단위 이동 방향 결정
+- 4방향 이동 (위/아래/좌/우)
+
+### MapManager 구현체 (DodgeVillainMapManager)
+
+- 공통: mapWidth, mapHeight (4x4 격자 크기)
+- **고유 정보**:
+  - 악당 오리 등장 방향/타이밍/동시 마릿수 규칙
+  - 난이도 곡선 (돌진 속도 + 등장 간격 단축 + 동시 등장 마릿수 증가)
+  - 예고 모션 타이밍
+
+### 장애물 오브젝트
+
+- 악당 오리: PassiveObject (자체이동, 직선 돌진) 또는 별도 MonsterBase
+  - 4방향(위/아래/좌/우)에서 직선 돌진
+
+### 충돌 레이어
+
+- 캐릭터: CollisionLayer.Character, collisionMask = Monster
+- 악당 오리: CollisionLayer.Monster
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

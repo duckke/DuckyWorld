@@ -121,6 +121,39 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | WaddleSprint |
+| 입력 타입 (IGameInput) | RapidTapInput (연타 → TPS 계산 → 속도 반영) |
+| 씬 | Games/WaddleSprint.unity |
+| 폴더 | MiniGame/WaddleSprint/ |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → End    : 골인 지점 통과 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### 입력 처리
+
+- InputManager에서 TouchDown 빈도를 시간 윈도우 내에서 카운트 → RapidTap 판정
+- TPS(초당 탭 수) → 스피드 레이트 → 이동 속도 + 애니메이션 속도 동시 적용
+
+### MapManager 구현체 (WaddleSprintMapManager)
+
+- 공통: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **고유 정보**:
+  - 트랙 길이 (고정)
+  - 골인 지점 위치
+  - 운동장 트랙 구성 (장애물 없음)
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |

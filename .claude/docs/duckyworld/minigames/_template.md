@@ -112,6 +112,34 @@
 
 ---
 
+## 코드 구조 (v4 기준)
+
+| 항목 | 내용 |
+|------|------|
+| GameType enum | [예: ThumpThumpSlope] |
+| 입력 타입 (IGameInput) | [TapInput / SwipeInput / RapidTapInput / JoystickInput] |
+| 씬 | [예: Games/ThumpThumpSlope.unity] |
+
+### 게임 상태 전이 (MiniGameModule 관리)
+
+```
+None → Ready   : MiniGameModule.OnEnter()
+Ready → Playing : UI 카운트다운 완료 → MiniGameModule.StartGame()
+Playing → Paused : UI 일시정지 → MiniGameModule.PauseGame()
+Paused → Playing : UI 재개 → MiniGameModule.ResumeGame()
+Playing → End    : 게임 조건 충족 → MiniGameModule.EndGame()
+End → Ready      : UI 재시작 → MiniGameModule.RestartGame()
+```
+
+### MapManager 구현체
+
+- MapManagerBase를 상속
+- `Init(MapData)` 오버라이드하여 게임 고유 정보 세팅
+- 공통 정보: mapWidth, mapHeight, scrollSpeed, spawnArea, despawnArea
+- **게임별 고유 정보**: [장애물 배치 규칙, 난이도 곡선, 지형 패턴 등 — 구현체에서 반드시 세팅]
+
+---
+
 ## 맵 생성
 
 | 항목 | 내용 |
