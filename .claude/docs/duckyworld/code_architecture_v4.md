@@ -23,6 +23,7 @@ Assets/Scripts/
 │   ├── MonoSingleton.cs                   MonoBehaviour 싱글톤 베이스
 │   ├── GameManager.cs                     메인 루프, 타이머, proc 체인
 │   ├── ModuleBase.cs                      모듈 추상 (오브젝트 관리)
+│   ├── PoolManager.cs                     Object + Appendage + View 통합 풀
 │   ├── GameSceneLoader.cs                 씬 전환 + 로딩
 │   └── ViewObjectManager.cs              View 전체 관리 (on/off 토글)
 │
@@ -75,18 +76,21 @@ Assets/Scripts/
 │   └── LobbyModule.cs                    로비
 │
 ├── Input/                             — 입력 시스템
-│   ├── InputManager.cs                    입력 큐, preProc에서 처리
-│   ├── IGameInput.cs                      인터페이스
-│   ├── TapInput.cs
-│   ├── SwipeInput.cs
-│   ├── RapidTapInput.cs
-│   └── JoystickInput.cs
+│   ├── InputManager.cs                    입력 큐, preProc에서 처리 (스와이프/연타 판정 포함)
+│   ├── IGameInput.cs                      인터페이스 (미니게임별 입력 타입 선언)
+│   ├── TapInput.cs                        탭 입력
+│   ├── SwipeInput.cs                      스와이프 입력
+│   ├── RapidTapInput.cs                   연타 입력
+│   └── JoystickInput.cs                   조이스틱 입력
 │
-├── Factory/                           — 생성 + 풀링
+├── Factory/                           — 생성
 │   ├── ObjectFactory.cs                   오브젝트 생성
-│   └── ObjectPool.cs                     ObjectType enum 키 풀링
+│   └── AppendageFactory.cs               Appendage 생성
 │
-├── Network/                           — PvP
+├── Bundle/                            — 번들 관리
+│   └── BundleManager.cs                   번들 버전 비교 + 다운로드 + 캐시 + 로드
+│
+├── Network/                           — PvP (추후 고도화 단계에서 구현)
 │   ├── NetworkManager.cs
 │   ├── InputSync.cs
 │   └── PhotonManager.cs
@@ -115,6 +119,7 @@ Assets/Scripts/
 ├── UI/                                — 단일 Canvas 스택
 │   ├── UIManager.cs                       Canvas 1개, 스택 push/pop
 │   ├── UIBase.cs                          UI 최상위 베이스
+│   ├── UILoading.cs                       로딩 UI (프로그레스바, GameSceneLoader 전용)
 │   ├── Screens/
 │   │   ├── UILobby.cs
 │   │   ├── UIThumpThumpSlope.cs
@@ -784,7 +789,39 @@ postProc → 입력 예약
 preProc  → InputManager.ProcessQueue() → 오브젝트 상태 반영
 ```
 
-InputData는 struct (GC 없음).
+### InputData (struct, GC 없음)
+
+```csharp
+public enum InputType
+{
+    TouchDown,      // 터치 시작
+    TouchMove,      // 터치 이동 (드래그)
+    TouchUp,        // 터치 종료
+    JoystickMove,   // 조이스틱 입력
+}
+
+public struct InputData
+{
+    public InputType inputType;
+    public int fingerId;            // 멀티터치 구분 (0, 1, 2...)
+    public Vector2 position;        // 터치 좌표 (스크린 또는 월드)
+    public Vector2 joystickValue;   // 조이스틱 방향+크기 (-1~1)
+    public int frameNumber;         // PvP 동기화용 (gameTimer 기반 프레임 번호)
+}
+```
+
+**스와이프 판정 — InputManager에서 처리:**
+- TouchDown 시 `fingerId`별로 시작 position 저장
+- TouchUp 시 시작 position과 종료 position 차이(delta)로 스와이프 판정
+- 별도 `SwipeInput` 클래스 불필요 — InputManager가 `fingerId` 추적하여 판정
+- 판정 기준: delta 거리 > threshold && delta 방향으로 방향 결정
+
+**연타(RapidTap) 판정 — InputManager에서 처리:**
+- TouchDown 빈도를 시간 윈도우 내에서 카운트
+- 일정 횟수 이상이면 RapidTap으로 판정
+- 별도 `RapidTapInput` 클래스 불필요
+
+> **정리**: `IGameInput` 구현체(TapInput, SwipeInput, RapidTapInput, JoystickInput)는 "이 미니게임이 어떤 입력을 받을지" 선언하는 역할. 실제 스와이프/연타 판정 로직은 InputManager에 집중.
 
 ---
 
@@ -863,8 +900,75 @@ public class MiniGameModule : ModuleBase
 }
 ```
 
+### MapManagerBase — 맵 생성/관리 추상
+
+```csharp
+public abstract class MapManagerBase
+{
+    // === 공통 정보 (모든 미니게임 공유) ===
+    public float mapWidth;          // 맵 가로 크기
+    public float mapHeight;         // 맵 세로 크기
+    public float scrollSpeed;       // 맵 스크롤 속도
+    public Rect spawnArea;          // 오브젝트 스폰 가능 영역
+    public Rect despawnArea;        // 오브젝트 회수 영역 (화면 밖)
+    
+    public virtual void Init(MapData mapData)
+    {
+        // 공통 정보 세팅
+        mapWidth = mapData.width;
+        mapHeight = mapData.height;
+        scrollSpeed = mapData.baseScrollSpeed;
+        spawnArea = mapData.spawnArea;
+        despawnArea = mapData.despawnArea;
+    }
+    
+    public abstract void OnReady();     // 맵 초기 세팅
+    public abstract void mainProc(float dt);  // 스크롤, 스폰 타이밍 등
+    public abstract void OnEnd();       // 맵 정리
+}
+```
+
+**각 미니게임의 MapManager 구현체:**
+- `MapManagerBase`를 상속하여 `Init()` 오버라이드
+- `MapData`에서 미니게임별 디테일 정보를 읽어 세팅
+
+> **중요**: 맵별 고유 정보(장애물 배치 규칙, 난이도 곡선, 지형 패턴 등)는 각 맵의 구현체에서 반드시 세팅할 것. `MapManagerBase`는 공통 정보만 보유하며, 게임별 세부 로직은 구현체 책임.
+
+```csharp
+// 예시: 퍼덕퍼덕 맵 매니저
+public class FlutterFlutterMapManager : MapManagerBase
+{
+    float pipeGap;              // 파이프 간격
+    float pipeSpawnInterval;    // 파이프 생성 주기
+    float difficultyTimer;      // 난이도 상승 타이머
+    
+    public override void Init(MapData mapData)
+    {
+        base.Init(mapData);
+        // MapData에서 게임 고유 정보 세팅
+        pipeGap = mapData.GetFloat("pipeGap");
+        pipeSpawnInterval = mapData.GetFloat("pipeSpawnInterval");
+    }
+    
+    public override void OnReady() { /* 초기 파이프 배치 */ }
+    public override void mainProc(float dt) { /* 스크롤 + 스폰 + 난이도 조절 */ }
+    public override void OnEnd() { /* 정리 */ }
+}
+```
+
 ### GameType enum
 ThumpThumpSlope, FlutterFlutter, WaddleSprint, HoppyForest, SlideRun, NarrowPath, DodgeVillain
+
+---
+
+## 8-1. Network (PvP) — 현재 상태
+
+> **네트워크(PvP)는 추후 고도화 단계에서 진행. 현재는 싱글 플레이 우선 구현.**
+
+- `Network/` 폴더(NetworkManager, InputSync, PhotonManager)는 폴더 구조에만 예약
+- 구현은 후순위 (Phase 13)
+- 현재 InputData의 `frameNumber` 필드만 PvP 대비로 미리 포함
+- 싱글 플레이에서는 `frameNumber`를 무시해도 무방
 
 ---
 
@@ -1100,6 +1204,200 @@ public class IntroModule : ModuleBase
 }
 ```
 
+### 12-3. BundleManager — 번들 버전 관리 + 다운로드 + 캐시
+
+```csharp
+public class BundleManager
+{
+    // === 상수 ===
+    const string VERSION_URL = "https://storage.googleapis.com/.../bundle_version.json";
+    const string BUNDLE_BASE_URL = "https://storage.googleapis.com/.../bundles/";
+    const string LOCAL_VERSION_KEY = "BundleVersionHash";  // PlayerPrefs 키
+    const int MAX_RETRY = 3;
+    
+    // === 번들 버전 매니페스트 (서버 JSON) ===
+    // bundle_version.json 예시:
+    // {
+    //   "version": "1.0.3",
+    //   "bundles": [
+    //     { "name": "character", "hash": "a1b2c3d4", "size": 1024000 },
+    //     { "name": "map",       "hash": "e5f6g7h8", "size": 512000 },
+    //     { "name": "obstacle",  "hash": "i9j0k1l2", "size": 256000 },
+    //     { "name": "ui",        "hash": "m3n4o5p6", "size": 768000 }
+    //   ]
+    // }
+    
+    [System.Serializable]
+    public class BundleManifest
+    {
+        public string version;
+        public BundleEntry[] bundles;
+    }
+    
+    [System.Serializable]
+    public class BundleEntry
+    {
+        public string name;
+        public string hash;     // 번들별 해시값 (변경 감지용)
+        public long size;       // 바이트 (다운로드 프로그레스 계산용)
+    }
+    
+    // === 로컬 캐시 매니페스트 ===
+    // Application.persistentDataPath/bundles/local_manifest.json 에 저장
+    // 다운로드 완료된 번들의 name→hash 매핑
+    [System.Serializable]
+    class LocalManifest
+    {
+        public Dictionary<string, string> bundleHashes = new();  // name → hash
+    }
+    
+    static BundleManifest serverManifest;
+    static LocalManifest localManifest;
+    static Dictionary<string, AssetBundle> loadedBundles = new();
+    
+    static string BundlePath => Path.Combine(Application.persistentDataPath, "bundles");
+    static string LocalManifestPath => Path.Combine(BundlePath, "local_manifest.json");
+    
+    // ──────────────────────────────────
+    // 1) 버전 비교
+    // ──────────────────────────────────
+    public static IEnumerator CheckUpdate()
+    {
+        // 서버 매니페스트 다운로드
+        using var request = UnityWebRequest.Get(VERSION_URL);
+        yield return request.SendWebRequest();
+        
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogWarning($"[BundleManager] 버전 체크 실패: {request.error}");
+            // 오프라인 모드 — 로컬 번들만 사용
+            yield break;
+        }
+        
+        serverManifest = JsonUtility.FromJson<BundleManifest>(request.downloadHandler.text);
+        
+        // 로컬 매니페스트 로드
+        if (File.Exists(LocalManifestPath))
+            localManifest = JsonUtility.FromJson<LocalManifest>(File.ReadAllText(LocalManifestPath));
+        else
+            localManifest = new LocalManifest();
+    }
+    
+    // ──────────────────────────────────
+    // 2) 변경된 번들만 다운로드 (해시 기반 캐시)
+    // ──────────────────────────────────
+    public static IEnumerator DownloadIfNeeded(Action<float> onProgress)
+    {
+        if (serverManifest == null) { onProgress?.Invoke(1f); yield break; }
+        
+        // 변경된 번들 목록 필터링
+        var toDownload = new List<BundleEntry>();
+        foreach (var entry in serverManifest.bundles)
+        {
+            if (!localManifest.bundleHashes.TryGetValue(entry.name, out var localHash)
+                || localHash != entry.hash)
+            {
+                toDownload.Add(entry);
+            }
+        }
+        
+        if (toDownload.Count == 0) { onProgress?.Invoke(1f); yield break; }
+        
+        // 전체 다운로드 크기 계산 (프로그레스용)
+        long totalSize = 0;
+        foreach (var e in toDownload) totalSize += e.size;
+        long downloaded = 0;
+        
+        Directory.CreateDirectory(BundlePath);
+        
+        foreach (var entry in toDownload)
+        {
+            bool success = false;
+            
+            for (int retry = 0; retry < MAX_RETRY; retry++)
+            {
+                string url = BUNDLE_BASE_URL + entry.name;
+                using var request = UnityWebRequest.Get(url);
+                yield return request.SendWebRequest();
+                
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    // 디바이스에 저장
+                    string filePath = Path.Combine(BundlePath, entry.name);
+                    File.WriteAllBytes(filePath, request.downloadHandler.data);
+                    
+                    // 로컬 매니페스트 갱신
+                    localManifest.bundleHashes[entry.name] = entry.hash;
+                    success = true;
+                    break;
+                }
+                
+                Debug.LogWarning($"[BundleManager] 다운로드 재시도 ({retry + 1}/{MAX_RETRY}): {entry.name}");
+                yield return new WaitForSeconds(1f);  // 재시도 전 대기
+            }
+            
+            if (!success)
+            {
+                Debug.LogError($"[BundleManager] 다운로드 실패: {entry.name} — 오프라인 모드 전환 또는 에러 팝업");
+                // TODO: UIManager에서 에러 팝업 표시 → 재시도/오프라인 선택
+                yield break;
+            }
+            
+            downloaded += entry.size;
+            onProgress?.Invoke((float)downloaded / totalSize);
+        }
+        
+        // 로컬 매니페스트 저장
+        File.WriteAllText(LocalManifestPath, JsonUtility.ToJson(localManifest));
+    }
+    
+    // ──────────────────────────────────
+    // 3) 로컬 번들 → 메모리 로드
+    // ──────────────────────────────────
+    public static IEnumerator LoadAll(Action<float> onProgress)
+    {
+        string[] bundleFiles = Directory.GetFiles(BundlePath, "*", SearchOption.TopDirectoryOnly);
+        // local_manifest.json 제외
+        var validFiles = new List<string>();
+        foreach (var f in bundleFiles)
+            if (!f.EndsWith(".json")) validFiles.Add(f);
+        
+        for (int i = 0; i < validFiles.Count; i++)
+        {
+            var bundleRequest = AssetBundle.LoadFromFileAsync(validFiles[i]);
+            yield return bundleRequest;
+            
+            if (bundleRequest.assetBundle != null)
+            {
+                string bundleName = Path.GetFileName(validFiles[i]);
+                loadedBundles[bundleName] = bundleRequest.assetBundle;
+            }
+            
+            onProgress?.Invoke((float)(i + 1) / validFiles.Count);
+        }
+    }
+    
+    // === 외부 접근 ===
+    public static Dictionary<string, AssetBundle> LoadedBundles => loadedBundles;
+    
+    public static void UnloadAll()
+    {
+        foreach (var bundle in loadedBundles.Values)
+            bundle.Unload(true);
+        loadedBundles.Clear();
+    }
+}
+```
+
+**요약:**
+| 단계 | 방식 | 세부 |
+|------|------|------|
+| 버전 비교 | 서버 `bundle_version.json` vs 로컬 `local_manifest.json` | 번들별 해시값 비교 |
+| 캐시 전략 | 해시 기반 — 해시가 같으면 스킵, 다르면 재다운로드 | `Application.persistentDataPath/bundles/`에 저장 |
+| 다운로드 | `UnityWebRequest`로 번들 파일 다운로드 | 변경된 번들만 선별 다운로드 |
+| 에러 처리 | 실패 시 최대 3회 재시도, 이후 오프라인 모드 또는 에러 팝업 | 재시도 간 1초 대기 |
+| 로드 | `AssetBundle.LoadFromFileAsync`로 메모리에 올림 | 비동기, 프로그레스 콜백 제공 |
+
 ---
 
 ## 13. 에디터 툴 — ColliderExtractor
@@ -1216,8 +1514,9 @@ ObjectBase (Logic, DWTimer, LogicAnimator)
 ### Phase 1: Core 뼈대
 **목표**: 프레임 루프가 돌아가는 최소 구조
 ```
-파일: MonoSingleton, GameManager, ModuleBase, DWTimer, CommonFunc, CommonConsts
+파일: MonoSingleton, GameManager, ModuleBase, PoolManager, DWTimer, CommonFunc, CommonConsts
 검증: GameManager.Update → DoUpdate 호출 → 로그 출력 확인
+      PoolManager 기본 동작 (PreWarm, Get, Return) 확인
 ```
 
 ### Phase 2: Object 계층
@@ -1229,19 +1528,20 @@ ObjectBase (Logic, DWTimer, LogicAnimator)
 ```
 
 ### Phase 3: 충돌 시스템
-**목표**: Logic 레벨 충돌 판정 + GC 제로 보장
+**목표**: Logic 레벨 충돌 판정 + GC 제로 보장 + Burst/NativeArray 구조
 ```
 파일: LogicColliderData, AnimationColliderData, CollisionLayer,
       CollisionManager, CollisionResult, CollisionHelper
+구조: ColliderSnapshot/LogicColliderData는 NativeArray, CollisionJob은 [BurstCompile]
 검증: 두 CollisionObject 겹침 → hitResults에 기록 → postProc에서 처리 확인
-      GC Profiler로 할당 제로 확인
+      GC Profiler로 할당 제로 확인, Burst Inspector로 컴파일 확인
 ```
 
-### Phase 4: Factory + Pool
-**목표**: ObjectType enum 기반 풀링, PreWarm
+### Phase 4: Factory
+**목표**: ObjectFactory + AppendageFactory 생성 로직
 ```
-파일: ObjectType enum, ObjectFactory, ObjectPool
-검증: PreWarm → Get → Return → Get 반복, GC Profiler 확인
+파일: ObjectType enum, ObjectFactory, AppendageFactory
+검증: Factory로 오브젝트/Appendage 생성 → PoolManager 연동 확인
 ```
 
 ### Phase 5: View 시스템
@@ -1268,16 +1568,20 @@ ObjectBase (Logic, DWTimer, LogicAnimator)
 ### Phase 8: UI 프레임워크
 **목표**: 단일 Canvas 스택 + NonLogicProc
 ```
-파일: UIBase, UIManager
+파일: UIBase, UIManager, UILoading
 검증: Push → Pop → Replace 스택 동작 + GameManager에서 Proc 호출
+      UILoading 프로그레스바 동작 확인
 ```
 
-### Phase 9: Player + Data/Info
-**목표**: 플레이어 정보 + Data/Info 분리 체계
+### Phase 9: Player + Data/Info + Bundle + 씬 전환
+**목표**: 플레이어 정보 + Data/Info 분리 체계 + 번들 파이프라인 + 씬 전환
 ```
 파일: PlayerSimpleInfo, PlayerInfo, CharacterData, CharacterInfo,
-      EquipmentData, EquipmentInfo, MiniGameData, MiniGameInfo 등
-검증: Data 로드 → Info 생성 → 런타임 수정 가능 확인
+      EquipmentData, EquipmentInfo, MiniGameData, MiniGameInfo,
+      BundleManager, DataRepository, GameSceneLoader
+검증: BundleManager 버전 체크 → 다운로드 → 로드 → DataRepository 등록
+      Data 로드 → Info 생성 → 런타임 수정 가능 확인
+      GameSceneLoader 씬 전환 + 로딩 UI 프로그레스바 동작
 ```
 
 ### Phase 10: 에디터 툴
@@ -1291,7 +1595,7 @@ ObjectBase (Logic, DWTimer, LogicAnimator)
 **목표**: 인트로/로비 기본 흐름
 ```
 파일: IntroModule, LobbyModule
-검증: Intro → Lobby 씬 전환 흐름
+검증: Intro (번들 로드) → Lobby 씬 전환 흐름
 ```
 
 ### Phase 12: 첫 미니게임 (퍼덕퍼덕)
@@ -1302,8 +1606,10 @@ ObjectBase (Logic, DWTimer, LogicAnimator)
 ```
 
 ### Phase 13: 백엔드 + 네트워크 (후순위)
+**목표**: Firebase 연동 + PvP 기반
 ```
-파일: FirebaseService, DataRepository, NetworkManager, InputSync, PhotonManager
+파일: FirebaseService, NetworkManager, InputSync, PhotonManager
+비고: 네트워크(PvP)는 싱글 플레이 안정화 이후 진행
 ```
 
 ### Phase 14: 경제 시스템 (후순위)
