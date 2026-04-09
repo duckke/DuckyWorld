@@ -134,6 +134,81 @@ Assets/Scripts/
 
 ---
 
+## 1-1. GameSceneLoader — 씬 전환 + 로딩
+
+```csharp
+public class GameSceneLoader : MonoSingleton<GameSceneLoader>
+{
+    UILoading loadingUI;         // 전체 가리는 로딩 UI (프로그레스바)
+    
+    // 씬 전환 요청 (어디서든 호출)
+    public void LoadScene(string sceneName, ModuleBase nextModule)
+    {
+        StartCoroutine(LoadSequence(sceneName, nextModule));
+    }
+    
+    IEnumerator LoadSequence(string sceneName, ModuleBase nextModule)
+    {
+        // 1) 로딩 UI 올리기 — 현재 화면 가리기
+        loadingUI.Show();
+        loadingUI.SetProgress(0f);
+        
+        // 2) 현재 모듈 정리
+        GameManager.Instance.CurrentModule?.OnExit();
+        
+        // 3) 비동기 씬 로딩
+        var asyncOp = SceneManager.LoadSceneAsync(sceneName);
+        asyncOp.allowSceneActivation = false;
+        
+        while (asyncOp.progress < 0.9f)
+        {
+            loadingUI.SetProgress(asyncOp.progress * 0.5f); // 0~50%
+            yield return null;
+        }
+        
+        asyncOp.allowSceneActivation = true;
+        yield return asyncOp;
+        
+        // 4) 씬 리소스 로드 (모듈별 필요 에셋)
+        float moduleProgress = 0f;
+        yield return nextModule.LoadResources((p) =>
+        {
+            moduleProgress = p;
+            loadingUI.SetProgress(0.5f + p * 0.5f); // 50~100%
+        });
+        
+        // 5) 모듈 시작
+        GameManager.Instance.SetModule(nextModule);
+        nextModule.OnEnter();
+        
+        // 6) 로딩 UI 치우기 — 다음 씬 노출
+        loadingUI.Hide();
+    }
+}
+```
+
+**ModuleBase에 추가:**
+```csharp
+public abstract class ModuleBase
+{
+    // 기존 코드...
+    
+    // 씬 전환 시 호출 — 필요한 리소스 로드 (오브젝트 PreWarm, 데이터 로드 등)
+    public virtual IEnumerator LoadResources(Action<float> onProgress)
+    {
+        onProgress?.Invoke(1f);
+        yield break;
+    }
+}
+```
+
+**UILoading:**
+- 전체 화면을 덮는 UI (UIManager 스택이 아닌 별도 관리)
+- 프로그레스바 + 간단한 팁 텍스트
+- GameSceneLoader가 직접 참조
+
+---
+
 ## 2. GameManager — 프레임 루프 상세
 
 ### 핵심: 고정 프레임 타임 기반 업데이트
@@ -623,12 +698,76 @@ public class ViewObjectManager : MonoSingleton<ViewObjectManager>
     Dictionary<int, ObjectView> activeViews;
     bool isEnabled = true;
     
-    public int CreateView(ObjectBase owner, string prefabKey) { ... }
-    public void SyncAll()  // Logic → View 동기화 (isEnabled일 때만)
-    public void SetEnabled(bool enabled)  // ML 모드 토글
-    public void DestroyView(int objectId) { ... }
+    public void SetEnabled(bool enabled) { isEnabled = enabled; }
+    
+    // Logic → View 동기화 (GameManager.DoUpdate 맨 끝에서 호출)
+    public void SyncAll(List<ObjectBase> objects)
+    {
+        if (!isEnabled) return;
+        
+        for (int i = 0; i < objects.Count; i++)
+        {
+            var logic = objects[i];
+            
+            // View 없으면 생성
+            if (!activeViews.TryGetValue(logic.objectId, out var view))
+            {
+                view = ViewPool.Get(logic.poolKey);
+                activeViews[logic.objectId] = view;
+            }
+            
+            // 값이 다른 것만 갱신
+            if (view.position != logic.position)
+                view.SetPosition(logic.position);
+            
+            if (view.rotation != logic.rotation)
+                view.SetRotation(logic.rotation);
+            
+            if (view.currentAnimId != logic.logicAnimator.currentAnimId ||
+                view.currentFrame != logic.logicAnimator.currentFrame)
+                view.SetAnimation(logic.logicAnimator.currentAnimId, 
+                                  logic.logicAnimator.currentFrame);
+            
+            if (view.facingDirection != logic.facingDirection)
+                view.SetFacing(logic.facingDirection);
+            
+            if (view.isVisible != logic.isVisible)
+                view.SetVisible(logic.isVisible);
+        }
+        
+        // Logic에서 삭제된 오브젝트의 View 회수
+        CleanupOrphanedViews(objects);
+    }
+    
+    void CleanupOrphanedViews(List<ObjectBase> objects) { ... }
+    
+    public void DestroyView(int objectId)
+    {
+        if (activeViews.Remove(objectId, out var view))
+            ViewPool.Return(view);
+    }
 }
 ```
+
+```csharp
+public class ObjectView : MonoBehaviour
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public int currentAnimId;
+    public int currentFrame;
+    public int facingDirection;
+    public bool isVisible;
+    
+    public void SetPosition(Vector3 pos) { position = pos; transform.position = pos; }
+    public void SetRotation(Quaternion rot) { rotation = rot; transform.rotation = rot; }
+    public void SetAnimation(int animId, int frame) { ... }  // SpriteRenderer 또는 Animator 제어
+    public void SetFacing(int dir) { facingDirection = dir; transform.localScale = new Vector3(dir, 1, 1); }
+    public void SetVisible(bool visible) { isVisible = visible; gameObject.SetActive(visible); }
+}
+```
+
+**ViewPool:** GameObject 전용 풀 (ObjectPool과 별도). ObjectPool은 Logic 객체, ViewPool은 GameObject.
 
 `SetEnabled(false)` → 게임 로직 100% 동일, 화면만 꺼짐. ML 초고속 시뮬 가능.
 
@@ -665,16 +804,62 @@ public class MiniGameModule : ModuleBase
 }
 ```
 
-### MiniGameBase
+### MiniGameBase + 상태 전이
+
 ```csharp
+public enum MiniGameState { None, Ready, Playing, Paused, End }
+
 public abstract class MiniGameBase
 {
     public abstract GameType GameType { get; }
+    public MiniGameState State { get; private set; } = MiniGameState.None;
+    
     public abstract void OnReady(), OnPlay(), OnPause(), OnResume(), OnEnd(), OnRestart();
     public virtual void mainProc(float dt) { }
     public abstract float GetScore();
     public abstract IGameInput CreateInput();
     public abstract MapManagerBase CreateMapManager();
+    
+    // MiniGameModule에서만 호출
+    internal void SetState(MiniGameState state) { State = state; }
+}
+```
+
+**상태 전이 규칙 — MiniGameModule이 관리:**
+```
+None → Ready → Playing → End
+                 ↕
+               Paused
+
+전이 트리거:
+- None → Ready   : MiniGameModule.OnEnter() 내부
+- Ready → Playing : UI 카운트다운 완료 후 UI가 MiniGameModule.StartGame() 호출
+- Playing → Paused : UI 일시정지 버튼 → MiniGameModule.PauseGame()
+- Paused → Playing : UI 재개 버튼 → MiniGameModule.ResumeGame()
+- Playing → End    : 게임 내부 조건 충족 → MiniGameModule.EndGame()
+- End → Ready      : UI 재시작 버튼 → MiniGameModule.RestartGame()
+```
+
+```csharp
+// MiniGameModule 전이 메서드
+public class MiniGameModule : ModuleBase
+{
+    public void StartGame()   { CurrentGame.SetState(MiniGameState.Playing); CurrentGame.OnPlay(); }
+    public void PauseGame()   { CurrentGame.SetState(MiniGameState.Paused);  CurrentGame.OnPause(); }
+    public void ResumeGame()  { CurrentGame.SetState(MiniGameState.Playing); CurrentGame.OnResume(); }
+    public void EndGame()     { CurrentGame.SetState(MiniGameState.End);     CurrentGame.OnEnd(); }
+    public void RestartGame() { CurrentGame.SetState(MiniGameState.Ready);   CurrentGame.OnRestart(); }
+    
+    // mainProc에서 Playing 상태일 때만 게임 로직 실행
+    public override void mainProc(float dt)
+    {
+        if (CurrentGame.State == MiniGameState.Playing)
+        {
+            base.mainProc(dt);
+            CurrentGame.mainProc(dt);
+            collisionManager.CheckCollisions(objects);
+        }
+    }
 }
 ```
 
@@ -726,40 +911,81 @@ public enum ObjectType
 }
 ```
 
-### ObjectPool
+### PoolManager (GameManager가 소유, 모든 풀 통합 관리)
+
 ```csharp
-public class ObjectPool
+public class PoolManager
 {
-    Dictionary<ObjectType, Queue<ObjectBase>> pools;
+    // === Object 풀 ===
+    Dictionary<ObjectType, Queue<ObjectBase>> objectPools;
     
-    // 게임 시작(로딩) 시 프리로드
-    public void PreWarm(ObjectType type, int count) { ... }
+    public void PreWarmObject(ObjectType type, int count) { ... }
     
-    public T Get<T>(ObjectType type) where T : ObjectBase, new()
+    public T GetObject<T>(ObjectType type) where T : ObjectBase, new()
     {
-        if (pools[type].Count > 0)
+        if (objectPools[type].Count > 0)
         {
-            var obj = (T)pools[type].Dequeue();
+            var obj = (T)objectPools[type].Dequeue();
             obj.OnSpawn();
             return obj;
         }
         return ObjectFactory.Create<T>(type);
     }
     
-    public void Return(ObjectBase obj)
+    public void ReturnObject(ObjectBase obj)
     {
         obj.OnDespawn();
-        pools[obj.poolKey].Enqueue(obj);
+        objectPools[obj.poolKey].Enqueue(obj);
     }
+    
+    // === Appendage 풀 ===
+    Dictionary<AppendageType, Queue<Appendage>> appendagePools;
+    
+    public void PreWarmAppendage(AppendageType type, int count) { ... }
+    
+    public Appendage GetAppendage(AppendageType type)
+    {
+        if (appendagePools[type].Count > 0)
+        {
+            var app = appendagePools[type].Dequeue();
+            app.Reset();
+            return app;
+        }
+        return AppendageFactory.Create(type);
+    }
+    
+    public void ReturnAppendage(Appendage app)
+    {
+        app.OnDetach(app.owner);
+        appendagePools[app.type].Enqueue(app);
+    }
+    
+    // === View 풀 (GameObject) ===
+    Dictionary<ObjectType, Queue<ObjectView>> viewPools;
+    
+    public ObjectView GetView(ObjectType type) { ... }
+    public void ReturnView(ObjectView view) { ... }
+    
+    // === 전체 정리 ===
+    public void ClearAll() { ... }  // 씬 전환 시
+}
+```
+
+```csharp
+// GameManager에서 통합 관리
+public class GameManager : MonoSingleton<GameManager>
+{
+    public PoolManager Pool { get; private set; }
+    // 호출: GameManager.Instance.Pool.GetObject<CharacterBase>(ObjectType.Character_Duck_Default)
+    // 호출: GameManager.Instance.Pool.GetAppendage(AppendageType.SpeedUp)
 }
 ```
 
 **GC 최소화:**
-- PreWarm으로 로딩 시 충분한 풀 생성
-- OnSpawn/OnDespawn에서 필드 초기화만 (new 없음)
+- PreWarm으로 로딩 시 충분한 풀 생성 (Object, Appendage, View 전부)
+- OnSpawn/OnDespawn/Reset에서 필드 초기화만 (new 없음)
 - 컬렉션은 Clear() (capacity 유지)
 - InputData, CollisionResult는 struct
-- Appendage도 풀링
 
 ---
 
@@ -792,7 +1018,7 @@ UI 명명: `UILobby`, `UIThumpThumpSlope`, `UIPopupGameOver` 등
 
 ---
 
-## 12. Data / Info 분리
+## 12. Data / Info 분리 + 번들 파이프라인
 
 | 구분 | 폴더 | 특성 | 예시 |
 |------|------|------|------|
@@ -800,6 +1026,79 @@ UI 명명: `UILobby`, `UIThumpThumpSlope`, `UIPopupGameOver` 등
 | Info | Info/ | 런타임 가공, 변경 가능 | CharacterInfo (현재 레벨, 장비 합산 스탯) |
 
 모든 시스템에 적용: Character, Equipment, Map, MiniGame, Obstacle 등
+
+### 12-1. 데이터 파이프라인
+
+```
+[에디터 타임]
+Google Drive → Google Sheet (원본 데이터 테이블)
+    ↓ (에디터 툴로 파싱)
+ScriptableObject 에셋 생성 (CharacterData, MapData 등)
+    ↓ (빌드)
+AssetBundle로 패킹
+    ↓ (배포)
+서버(Firebase Storage 등)에 업로드
+```
+
+### 12-2. 번들 로딩 (IntroModule)
+
+```
+[런타임 — Intro 씬]
+1) 서버에서 번들 버전 체크 (로컬 vs 서버)
+2) 새 번들이 있으면 다운로드 → 디바이스 저장
+3) 디바이스에 저장된 번들 전체 로드 → 메모리에 올림
+4) DataRepository에 Data 객체 등록
+5) 완료 → 로비 씬 전환
+```
+
+```csharp
+public class DataRepository : MonoSingleton<DataRepository>
+{
+    // Data 타입별 Dictionary
+    Dictionary<int, CharacterData> characterTable;
+    Dictionary<int, EquipmentData> equipmentTable;
+    Dictionary<int, MiniGameData> miniGameTable;
+    Dictionary<int, MapData> mapTable;
+    Dictionary<int, ObstacleData> obstacleTable;
+    
+    // 번들에서 로드한 ScriptableObject를 파싱하여 등록
+    public void RegisterFromBundle(AssetBundle bundle)
+    {
+        var characters = bundle.LoadAllAssets<CharacterDataAsset>();
+        foreach (var asset in characters)
+            characterTable[asset.id] = asset.ToData();
+        // 다른 테이블도 동일 패턴
+    }
+    
+    // 조회 (런타임 어디서든)
+    public CharacterData GetCharacter(int id) => characterTable[id];
+    public MapData GetMap(int id) => mapTable[id];
+    // ...
+}
+```
+
+```csharp
+// IntroModule.LoadResources 에서 번들 로딩
+public class IntroModule : ModuleBase
+{
+    public override IEnumerator LoadResources(Action<float> onProgress)
+    {
+        // 1) 번들 버전 체크
+        yield return BundleManager.CheckUpdate();
+        onProgress?.Invoke(0.2f);
+        
+        // 2) 새 번들 다운로드 (있으면)
+        yield return BundleManager.DownloadIfNeeded((p) => onProgress?.Invoke(0.2f + p * 0.4f));
+        
+        // 3) 로컬 번들 로드 → 메모리
+        yield return BundleManager.LoadAll((p) => onProgress?.Invoke(0.6f + p * 0.3f));
+        
+        // 4) DataRepository에 등록
+        DataRepository.Instance.RegisterAll(BundleManager.LoadedBundles);
+        onProgress?.Invoke(1f);
+    }
+}
+```
 
 ---
 
@@ -851,32 +1150,40 @@ GameManager (MonoSingleton, FRAME_TIME 기반)
 │ - spawnQueue, despawnQueue
 │ - DoUpdate(dt): pre → main → post → ViewSync → UIProc
 │
+├── PoolManager (Object + Appendage + View 통합 풀)
+│   ├── objectPools: Dictionary<ObjectType, Queue<ObjectBase>>
+│   ├── appendagePools: Dictionary<AppendageType, Queue<Appendage>>
+│   ├── viewPools: Dictionary<ObjectType, Queue<ObjectView>>
+│   └── ObjectFactory, AppendageFactory
+│
 ├── CurrentModule: ModuleBase
 │   │ - objects: List<ObjectBase>
 │   │ - pre/main/postProc 체인
+│   │ - LoadResources(onProgress) — 씬 전환 시 리소스 로드
 │   │
-│   ├── IntroModule
+│   ├── IntroModule (번들 체크/다운로드/로드 → DataRepository 등록)
 │   ├── LobbyModule
 │   └── MiniGameModule
-│       ├── currentGameType, currentGame: MiniGameBase
+│       ├── currentGameType, currentGame: MiniGameBase (상태: Ready/Playing/Paused/End)
 │       ├── mapManager: MapManagerBase
 │       └── collisionManager: CollisionManager
 │
+├── GameSceneLoader (MonoSingleton)
+│   └── UILoading (프로그레스바, 씬 전환 시 가리개)
+│
 ├── ViewObjectManager (MonoSingleton)
-│   │ - activeViews, isEnabled, SyncAll()
-│   └── ViewPool (GameObject 풀)
+│   └── SyncAll(): position/rotation/anim/facing/visible 비교 후 갱신
 │
 ├── InputManager (MonoSingleton)
 │   ├── IGameInput (Tap, Swipe, RapidTap, Joystick)
 │   ├── inputQueue
 │   └── InputSync (PvP)
 │
-├── ObjectPool (ObjectType enum 키)
-│   └── ObjectFactory
-│
-├── CollisionManager
-│   ├── hitResults[256] (사전 할당)
-│   ├── CheckCollisions() — mainProc
+├── CollisionManager ([BurstCompile] Job 기반)
+│   ├── NativeArray<ColliderSnapshot> (프레임마다 빌드)
+│   ├── NativeArray<LogicColliderData> (로딩 시 1회 할당)
+│   ├── NativeList<CollisionResult> (Job 출력)
+│   ├── CheckCollisions() — Schedule + Complete — mainProc
 │   └── ProcessResults() — postProc
 │
 ├── UIManager (MonoSingleton, 단일 Canvas 스택)
@@ -884,8 +1191,9 @@ GameManager (MonoSingleton, FRAME_TIME 기반)
 │
 ├── PlayerInfo (현재 플레이어)
 ├── CurrencyManager
-├── FirebaseService (MonoSingleton)
-└── DataRepository
+├── DataRepository (MonoSingleton, 번들에서 로드한 Data 테이블)
+├── BundleManager (번들 버전 체크/다운로드/로드)
+└── FirebaseService (MonoSingleton)
 
 ObjectBase (Logic, DWTimer, LogicAnimator)
 ├── DrawOnly (이펙트)
