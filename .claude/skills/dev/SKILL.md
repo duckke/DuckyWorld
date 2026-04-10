@@ -10,7 +10,8 @@ description: Unity·C# 코드 작성, 구현, 디버깅, 리팩토링 등 개발
 ## 실행 방법
 
 현재 대화 맥락에서 목표·기대 산출물·제약을 파악한 뒤,  
-**Agent 툴을 `subagent_type: "개발-유니티"`** 로 호출하고 아래 형식의 프롬프트를 전달한다.
+**Agent 툴을 `subagent_type: "general-purpose"`** 로 호출하고 아래 형식의 프롬프트를 전달한다.
+뚝딱이(팀장)가 내부에서 작업 성격에 따라 에이전트를 선택해서 실행한다.
 
 ```
 /Users/duck/Documents/Work/DuckyWorld/.claude/agents/develop/leader.md 를 읽고 해당 워크플로우를 따를 것.
