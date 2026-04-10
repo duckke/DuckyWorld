@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DuckyWorld.Input;
 
 namespace DuckyWorld.Core
 {
@@ -39,7 +40,10 @@ namespace DuckyWorld.Core
         /// </summary>
         private void DoUpdate()
         {
-            // Step 1: PreProc - 입력 및 상태 갱신 준비
+            // Step 1: PreProc - 입력 처리 후 상태 갱신 준비
+            // 입력 큐를 먼저 처리하여 이번 프레임 오브젝트 상태에 반영
+            InputManager.Instance?.ProcessQueue();
+
             foreach (ModuleBase module in _modules)
             {
                 if (module.IsInitialized)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using DuckyWorld.Input;
 
 namespace DuckyWorld.Object
 {
@@ -212,25 +213,6 @@ namespace DuckyWorld.Object
             }
 
             return result;
-        }
-    }
-
-    /// <summary>
-    /// 입력 데이터 (프레임마다 전달)
-    /// </summary>
-    public struct InputData
-    {
-        public Vector2 moveInput;      // 이동 입력 (-1 ~ 1)
-        public bool jumpPressed;       // 점프 버튼
-        public bool attackPressed;     // 공격 버튼
-        public Vector2 attackDirection; // 공격 방향
-
-        public InputData(Vector2 move, bool jump, bool attack, Vector2 atkDir)
-        {
-            moveInput = move;
-            jumpPressed = jump;
-            attackPressed = attack;
-            attackDirection = atkDir;
         }
     }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using DuckyWorld.Input;
 
 namespace DuckyWorld.Object
 {
