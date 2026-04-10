@@ -95,7 +95,7 @@ namespace DuckyWorld.Factory
 
                 // === 이펙트 ===
                 case ObjectType.Effect_Explosion:
-                    if (obj is DrawOnly effectExplosion)
+                    if (obj is DrawOnlyObject effectExplosion)
                     {
                         effectExplosion.objectName = "Effect_Explosion";
                         effectExplosion.duration = 0.5f;
@@ -104,7 +104,7 @@ namespace DuckyWorld.Factory
                     break;
 
                 case ObjectType.Effect_ScorePopup:
-                    if (obj is DrawOnly effectPopup)
+                    if (obj is DrawOnlyObject effectPopup)
                     {
                         effectPopup.objectName = "Effect_ScorePopup";
                         effectPopup.duration = 1.5f;

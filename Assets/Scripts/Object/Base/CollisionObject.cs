@@ -25,9 +25,6 @@ namespace DuckyWorld.Object
         public int activeColliderIndex { get; set; } = 0;
         public int activeColliderCount { get; set; } = 0;
 
-        // 방향 (1=우, -1=좌)
-        public int facingDirection { get; set; } = 1;
-
         public CollisionObject()
         {
             hp = 100;
@@ -44,7 +41,7 @@ namespace DuckyWorld.Object
         {
             base.OnDespawn();
             hp = maxHp;
-            facingDirection = 1;
+            // facingDirection은 ObjectBase.OnDespawn에서 초기화
             activeColliderIndex = 0;
             activeColliderCount = 0;
         }

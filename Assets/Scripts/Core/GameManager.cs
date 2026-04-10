@@ -66,6 +66,18 @@ namespace DuckyWorld.Core
                 }
             }
 
+            // Step 4: ViewSync - Logic → View 동기화 (Logic Proc 완료 후)
+            if (ViewObjectManager.Instance != null)
+            {
+                foreach (ModuleBase module in _modules)
+                {
+                    if (module.IsInitialized)
+                    {
+                        ViewObjectManager.Instance.SyncAll(module.Objects);
+                    }
+                }
+            }
+
             Debug.Log("[GameManager] Frame updated - DoUpdate called");
         }
 

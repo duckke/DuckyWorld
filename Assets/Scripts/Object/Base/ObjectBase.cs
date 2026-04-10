@@ -1,5 +1,6 @@
 using UnityEngine;
 using DuckyWorld.Utils;
+using DuckyWorld.Factory;
 
 namespace DuckyWorld.Object
 {
@@ -21,13 +22,21 @@ namespace DuckyWorld.Object
         public Quaternion rotation { get; set; }
 
         // 타이머 (쿨다운, 지속 효과 등)
-        public DWTimer objectTimer { get; private set; }
+        // DWTimer는 struct이므로 필드로 선언하여 외부에서 직접 수정 가능
+        public DWTimer objectTimer;
 
         // View 연동
         public int viewId { get; set; } = -1;  // -1 = View 없음
 
         // 풀 관리
         public ObjectType poolKey { get; set; }
+
+        // 표시 상태 (View 동기화 대상)
+        public bool isVisible { get; set; } = true;
+
+        // 방향 (1=우, -1=좌, View 반전에 사용)
+        // CollisionObject는 이 값을 충돌체 미러링에도 활용
+        public int facingDirection { get; set; } = 1;
 
         // 애니메이션 관리자 (내장)
         public LogicAnimator logicAnimator { get; private set; }
@@ -60,6 +69,8 @@ namespace DuckyWorld.Object
             position = Vector3.zero;
             rotation = Quaternion.identity;
             viewId = -1;
+            isVisible = true;
+            facingDirection = 1;
         }
 
         /// <summary>
@@ -105,17 +116,4 @@ namespace DuckyWorld.Object
         }
     }
 
-    /// <summary>
-    /// 오브젝트 타입 (풀 관리용)
-    /// </summary>
-    public enum ObjectType
-    {
-        Unknown = 0,
-        Character = 1,
-        Monster = 2,
-        Obstacle = 3,
-        Projectile = 4,
-        Item = 5,
-        Effect = 6,
-    }
 }

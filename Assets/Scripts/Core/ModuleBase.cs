@@ -216,5 +216,10 @@ namespace DuckyWorld.Core
         public int GetObjectCount() => _objects.Count;
 
         public bool IsInitialized => _isInitialized;
+
+        /// <summary>
+        /// 이 모듈이 관리하는 Logic 오브젝트 목록 (ViewObjectManager에서 SyncAll에 전달)
+        /// </summary>
+        public List<ObjectBase> Objects => _objects;
     }
 }
