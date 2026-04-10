@@ -8,6 +8,7 @@ namespace DuckyWorld.Core
     /// 모든 로직 모듈의 기본 클래스
     /// GameManager에 등록되어 프레임 루프(preProc→mainProc→postProc)에 참여
     /// ObjectBase 리스트 관리 기능 포함
+    /// 충돌 시스템 통합 (CollisionManager)
     /// </summary>
     public abstract class ModuleBase : MonoBehaviour
     {
@@ -21,6 +22,10 @@ namespace DuckyWorld.Core
 
         // Object 계층 리스트 (로직 오브젝트 관리)
         protected List<ObjectBase> _objects = new List<ObjectBase>();
+
+        // 충돌 관리자 (Burst Job 기반)
+        protected CollisionManager _collisionManager;
+        protected LogicColliderData[] _colliderTable = new LogicColliderData[0];
 
         protected virtual void Awake()
         {
@@ -37,6 +42,11 @@ namespace DuckyWorld.Core
         {
             if (_isInitialized) return;
             _isInitialized = true;
+
+            // 충돌 관리자 초기화
+            _collisionManager = new CollisionManager();
+            _collisionManager.Init(_colliderTable, 1024); // maxObjects = 1024
+
             Debug.Log($"[{moduleName}] Initialized");
         }
 
@@ -47,6 +57,14 @@ namespace DuckyWorld.Core
         {
             _isInitialized = false;
             _registry.Clear();
+
+            // 충돌 관리자 정리
+            if (_collisionManager != null)
+            {
+                _collisionManager.Dispose();
+                _collisionManager = null;
+            }
+
             Debug.Log($"[{moduleName}] Cleaned up");
         }
 
@@ -64,6 +82,7 @@ namespace DuckyWorld.Core
 
         /// <summary>
         /// mainProc - 로직 업데이트 (위치 이동, 상태 변경 등)
+        /// 충돌 감지는 이 단계에서 Job으로 스케줄됨 (결과 처리는 postProc에서)
         /// </summary>
         public virtual void DoMainProc()
         {
@@ -72,13 +91,26 @@ namespace DuckyWorld.Core
             {
                 _objects[i].mainProc(Time.deltaTime);
             }
+
+            // 충돌 감지 (Job 스케줄링)
+            if (_collisionManager != null)
+            {
+                _collisionManager.CheckCollisions(_objects);
+            }
         }
 
         /// <summary>
         /// postProc - 충돌 처리, 뷰 동기화 (프레임 종료)
+        /// 충돌 감지 Job 완료 대기 후 결과 처리
         /// </summary>
         public virtual void DoPostProc()
         {
+            // 충돌 결과 처리 (Job 완료 대기)
+            if (_collisionManager != null)
+            {
+                _collisionManager.ProcessResults(_objects);
+            }
+
             // Object 계층 postProc 체인
             for (int i = _objects.Count - 1; i >= 0; i--)
             {

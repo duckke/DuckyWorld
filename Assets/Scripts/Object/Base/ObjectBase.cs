@@ -65,11 +65,19 @@ namespace DuckyWorld.Object
         /// <summary>
         /// preProc - 입력, 상태 변경 전 준비 (각 프레임 시작)
         /// 애니메이션 프레임 진행, 타이머 갱신 등
+        /// 프레임 변경 시 충돌체 인덱스 갱신 (CollisionObject에서)
         /// </summary>
         public virtual void preProc(float dt)
         {
             objectTimer.Tick(dt);
-            logicAnimator.UpdateFrame(dt);
+
+            // 애니메이션 프레임 업데이트 및 변경 감지
+            bool frameChanged = logicAnimator.UpdateFrame(dt);
+            if (frameChanged && this is CollisionObject co)
+            {
+                // 프레임 변경 시 활성 충돌체 범위 업데이트
+                co.UpdateActiveColliderRange(logicAnimator.CurrentAnimId, logicAnimator.CurrentFrame);
+            }
         }
 
         /// <summary>
