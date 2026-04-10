@@ -36,6 +36,18 @@ namespace DuckyWorld.Core
         }
 
         /// <summary>
+        /// 씬 진입 시 호출 — 모듈 활성화, 게임 상태 초기화
+        /// GameSceneLoader가 씬 전환 완료 후 호출한다.
+        /// </summary>
+        public virtual void OnEnter() { }
+
+        /// <summary>
+        /// 씬 이탈 시 호출 — 모듈 비활성화, 정리
+        /// GameSceneLoader가 씬 전환 시작 전 호출한다.
+        /// </summary>
+        public virtual void OnExit() { }
+
+        /// <summary>
         /// 모듈 초기화 - GameManager에서 호출
         /// </summary>
         public virtual void Initialize()
