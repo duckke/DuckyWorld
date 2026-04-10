@@ -3,6 +3,18 @@ using UnityEngine;
 namespace DuckyWorld.Object
 {
     /// <summary>
+    /// Appendage 타입 enum
+    /// 버프/디버프 종류 정의
+    /// </summary>
+    public enum AppendageType
+    {
+        SpeedUp,      // 속도 증가
+        Invincible,   // 무적
+        Stun,         // 기절
+        SlowDown,     // 속도 감소
+    }
+
+    /// <summary>
     /// 버프/디버프 시스템
     /// ActiveObject에 동적으로 붙어 지속시간 동안 효과 제공
     /// 각 appendage는 독립적인 라이프사이클을 가짐
