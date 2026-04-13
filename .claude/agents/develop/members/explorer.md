@@ -1,6 +1,6 @@
 ---
 name: 개발-뒤적이
-description: 개발팀장 전용 — Unity 코드·씬·에셋 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
+description: Unity 코드·씬·에셋 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
 model: claude-haiku-4-5-20251001
 tools: [Glob, Grep, Read]
 ---

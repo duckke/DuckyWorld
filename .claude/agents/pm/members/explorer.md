@@ -1,6 +1,6 @@
 ---
 name: PM-뒤적이
-description: PM팀장 전용 — 에이전트·스킬·설정 파일 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
+description: 에이전트·스킬·설정 파일 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
 model: claude-haiku-4-5-20251001
 tools: [Glob, Grep, Read]
 ---

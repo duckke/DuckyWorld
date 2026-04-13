@@ -38,7 +38,31 @@ Agent 툴, `subagent_type: "general-purpose"`:
 참고 정보: [탐색 결과]
 ```
 
-**수정까지인 경우** — pm-work 스킬 흐름을 따른다 (깔끔이 계획 → 비서 단계별 실행).
+**수정까지인 경우** — 깔끔이에게 계획 수신 후 단계별 실행.
+
+1. "깔끔이(PM팀장)에게 계획 요청합니다" 출력 후 Agent 호출.
+
+   Agent 툴, `subagent_type: "general-purpose"`:
+   ```
+   /Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/leader.md 를 읽고 계획 모드로 동작할 것.
+
+   목표: [한 문장]
+   기대 산출물: [구체적 결과물]
+   제약: [있으면 명시, 없으면 생략]
+   ```
+
+2. 계획서를 사용자에게 출력.
+
+3. 각 Step을 순서대로 실행. Step 시작 전 "현재 작업 중: [담당] — [작업내용]..." 출력.
+
+   담당별 호출:
+   - **PM-뒤적이** → Agent 툴, `subagent_type: "pm-뒤적이"`
+   - **깔끔이** → Agent 툴, `subagent_type: "general-purpose"`, 실행 모드로 호출:
+     ```
+     /Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/leader.md 를 읽고 실행 모드로 동작할 것.
+     실행할 단계: [단계 내용]
+     참고 정보: [이전 탐색 결과 등]
+     ```
 
 ### 4. 결과 보고
 

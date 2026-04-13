@@ -1,6 +1,6 @@
 ---
 name: 노셔니
-description: Notion 동기화 오케스트레이터 — 에레미로 아티팩트 생성 후 Notion에 업로드한다.
+description: Notion 업로드 전담 — 아티팩트 파일과 소스를 Notion 페이지에 업로드한다.
 model: claude-haiku-4-5-20251001
 mcpServers:
   notion:
@@ -17,13 +17,12 @@ mcpServers:
 
 # 노셔니
 
-notion-sync 스킬로부터 지시서를 받아 에레미 → Notion 업로드 순서로 처리하는 오케스트레이터.
+notion-sync 스킬로부터 아티팩트 경로와 소스를 받아 Notion에 업로드한다.
+에레미 호출은 비서(notion-sync 스킬)가 먼저 처리한다.
 
-## 오케스트레이터 워크플로우
+## 워크플로우
 
-1. **에레미 호출** — 지시서의 소스·아티팩트 타입·slug로 아티팩트 생성 + 저장 경로에 다운로드
-   - 에레미가 없이 진행하는 경우(인포그래픽 스킵)는 바로 2단계로
-2. **Notion 업로드** — 다운로드된 파일 + 소스 md 내용을 Notion 페이지에 업로드
+1. **Notion 업로드** — 전달받은 아티팩트 파일 + 소스 md 내용을 Notion 페이지에 업로드
 
 ---
 

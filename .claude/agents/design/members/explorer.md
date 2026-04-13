@@ -1,6 +1,6 @@
 ---
 name: 기획-뒤적이
-description: 기획팀장 전용 — 기획서·문서 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
+description: 기획서·문서 탐색, 읽기 전용으로 핵심만 요약해 반환한다.
 model: claude-haiku-4-5-20251001
 tools: [Glob, Grep, Read]
 ---
