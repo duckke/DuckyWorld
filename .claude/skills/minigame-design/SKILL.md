@@ -9,14 +9,21 @@ description: 미니게임 기획하고 개선한다.
 
 ## 비서 실행 순서
 
-시작 시 아래 체크리스트를 출력하고, 각 단계 완료 시 `[x]`로 업데이트해서 출력한다.
+### 태스크 초기화
 
-```
-- [ ] Step 1: 사전 구체화
-- [ ] Step 2: 기획서 탐색 (기획-뒤적이)
-- [ ] Step 3: 기획 토론 세션 (꼼꼼이)
-- [ ] Step 4: 유저 확인 및 기획서 업데이트
-```
+시작 즉시 아래 4개 태스크를 **TaskCreate**로 생성한다.
+
+| subject | description | activeForm |
+|---------|-------------|------------|
+| Step 1: 사전 구체화 | 대상 게임·논의 항목 확인 | 내용 구체화 중 |
+| Step 2: 기획서 탐색 | 기획-뒤적이가 기존 기획서 탐색 | 기획서 탐색 중 |
+| Step 3: 기획 토론 세션 | 꼼꼼이가 크리·로직 이중 자아 토론 | 기획 토론 중 |
+| Step 4: 유저 확인 및 기획서 업데이트 | 토론 결과 확인 후 기획서 반영 | 기획서 업데이트 중 |
+
+각 Step 시작 전 → **TaskUpdate**(status: in_progress)  
+각 Step 완료 후 → **TaskUpdate**(status: completed)
+
+---
 
 ### Step 1. 사전 구체화 (비서 직접)
 
@@ -26,8 +33,6 @@ description: 미니게임 기획하고 개선한다.
 
 ### Step 2. 기획서 탐색
 
-"현재 작업 중: 기획-뒤적이 — 기획서 탐색 중..." 출력 후 Agent 호출.
-
 Agent 툴, `subagent_type: "기획-뒤적이"`:
 ```
 .claude/docs/duckyworld/minigames/ 에서 [게임명] 기획서를 찾아 내용 요약.
@@ -35,8 +40,6 @@ Agent 툴, `subagent_type: "기획-뒤적이"`:
 ```
 
 ### Step 3. 기획 토론 세션
-
-"현재 작업 중: 꼼꼼이 — 미니게임 기획 세션 중..." 출력 후 Agent 호출.
 
 Agent 툴, `subagent_type: "general-purpose"`:
 ```
@@ -52,9 +55,7 @@ Agent 툴, `subagent_type: "general-purpose"`:
 
 토론 결과를 유저에게 보여주고 확인 요청.
 
-**승인 시** — "현재 작업 중: 꼼꼼이 — 기획서 업데이트 중..." 출력 후 Agent 호출.
-
-Agent 툴, `subagent_type: "general-purpose"`:
+**승인 시** — Agent 툴, `subagent_type: "general-purpose"`:
 ```
 /Users/duck/Documents/Work/DuckyWorld/.claude/agents/design/leader.md 를 읽고 실행 모드로 동작할 것.
 실행할 단계: 기획서 파일 업데이트

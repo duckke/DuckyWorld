@@ -9,14 +9,21 @@ description: 문서·코드·링크 등 다양한 소스를 Notion 페이지에 
 
 ## 비서 실행 순서
 
-시작 시 아래 체크리스트를 출력하고, 각 단계 완료 시 `[x]`로 업데이트해서 출력한다.
+### 태스크 초기화
 
-```
-- [ ] Step 1: 입력 유형·아티팩트 타입 결정
-- [ ] Step 2: 노트북 확인
-- [ ] Step 3: 에레미 호출 (아티팩트 생성)
-- [ ] Step 4: 노셔니 호출 (Notion 업로드)
-```
+시작 즉시 아래 4개 태스크를 **TaskCreate**로 생성한다.
+
+| subject | description | activeForm |
+|---------|-------------|------------|
+| Step 1: 입력 유형·아티팩트 타입 결정 | 소스 유형 파악 및 아티팩트 타입 결정 | 입력 유형 분석 중 |
+| Step 2: 노트북 확인 | notebooks.json에서 slug 확인 | 노트북 확인 중 |
+| Step 3: 에레미 호출 (아티팩트 생성) | NotebookLM 아티팩트 생성 | 아티팩트 생성 중 |
+| Step 4: 노셔니 호출 (Notion 업로드) | Notion 페이지 업로드 | Notion 업로드 중 |
+
+각 Step 시작 전 → **TaskUpdate**(status: in_progress)  
+각 Step 완료 후 → **TaskUpdate**(status: completed)
+
+---
 
 ### Step 1. 입력 유형·아티팩트 타입 결정 (비서 직접)
 
@@ -38,8 +45,6 @@ description: 문서·코드·링크 등 다양한 소스를 Notion 페이지에 
 
 ### Step 3. 에레미 호출 (아티팩트 생성)
 
-"현재 작업 중: 에레미 — 아티팩트 생성 중..." 출력 후 Agent 호출.
-
 Agent 툴, `subagent_type: "에레미"`:
 ```
 아래 정보로 아티팩트를 생성하고 지정 경로에 다운로드할 것.
@@ -52,8 +57,6 @@ Agent 툴, `subagent_type: "에레미"`:
 완료 후 다운로드된 파일 경로를 확인한다.
 
 ### Step 4. 노셔니 호출 (Notion 업로드)
-
-"현재 작업 중: 노셔니 — Notion 업로드 중..." 출력 후 Agent 호출.
 
 Agent 툴, `subagent_type: "노셔니"`:
 ```
