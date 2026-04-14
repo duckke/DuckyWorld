@@ -1,5 +1,5 @@
 ---
-name: 뚝딱이
+name: dev-work
 description: Unity·C# 코드 작성, 구현, 디버깅, 리팩토링 등 개발 작업을 처리한다.
 ---
 

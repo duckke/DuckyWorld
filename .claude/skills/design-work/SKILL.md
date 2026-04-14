@@ -1,5 +1,5 @@
 ---
-name: 꼼꼼이
+name: design-work
 description: 게임 기획, 시스템 설계, 기획서 작성·수정 등 기획 작업을 처리한다.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: 깔끔이
+name: pm-work
 description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로세스 개선 등 PM 작업을 처리한다.
 ---
 
