@@ -33,14 +33,15 @@ trap 'rm -rf "$WORK"' EXIT
 NOTEBOOK_NAME=""
 NOTEBOOK_TITLE=""
 OUTPUT_BASE="${PROJECT_ROOT}/.claude/docs/notebooklm"
+OUTPUT_DIR_OVERRIDE=""
 
 # ── 인수 파싱 ──────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
   key="$1"
   case "$key" in
-    --notebook-name)  NOTEBOOK_NAME="$2";  shift 2 ;;
-    --notebook-title) NOTEBOOK_TITLE="$2"; shift 2 ;;
-    --output-dir)     OUTPUT_BASE="$2";    shift 2 ;;
+    --notebook-name)  NOTEBOOK_NAME="$2";      shift 2 ;;
+    --notebook-title) NOTEBOOK_TITLE="$2";     shift 2 ;;
+    --output-dir)     OUTPUT_DIR_OVERRIDE="$2"; shift 2 ;;
     --*-sources)
       type="${key#--}"; type="${type%-sources}"
       echo "$2" > "$WORK/src_${type}"
@@ -65,9 +66,17 @@ done
 sort -u "$WORK/types" -o "$WORK/types"
 [[ -z "$NOTEBOOK_TITLE" ]] && NOTEBOOK_TITLE="$NOTEBOOK_NAME"
 
-OUTPUT_DIR="${OUTPUT_BASE}/${NOTEBOOK_NAME}"
-NB_JSON="${OUTPUT_BASE}/notebooks.json"
+if [[ -n "$OUTPUT_DIR_OVERRIDE" ]]; then
+  OUTPUT_DIR="$OUTPUT_DIR_OVERRIDE"
+else
+  OUTPUT_DIR="${OUTPUT_BASE}/${NOTEBOOK_NAME}"
+fi
+NB_JSON="${PROJECT_ROOT}/.claude/docs/notebooklm/notebooks.json"
 mkdir -p "$OUTPUT_DIR"
+
+# 파일명 prefix: slug에서 경로 구분자·확장자 제거
+FILE_PREFIX=$(basename "$NOTEBOOK_NAME")
+FILE_PREFIX="${FILE_PREFIX%.*}"
 
 # ── 확장자 함수 ────────────────────────────────────────────
 get_ext() {
@@ -317,9 +326,9 @@ TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 while IFS= read -r type; do
   ext=$(get_ext "$type")
-  filepath="${OUTPUT_DIR}/${NOTEBOOK_NAME}-${type}-${TIMESTAMP}.${ext}"
+  filepath="${OUTPUT_DIR}/${FILE_PREFIX}-${type}-${TIMESTAMP}.${ext}"
 
-  rotate_files "$OUTPUT_DIR" "$NOTEBOOK_NAME" "$type" "$ext"
+  rotate_files "$OUTPUT_DIR" "$FILE_PREFIX" "$type" "$ext"
 
   $NLM download "$type" "$filepath" -n "$NOTEBOOK_ID" --latest --force > /dev/null 2>&1 \
     && echo "  완료: $(basename "$filepath")" \
@@ -337,6 +346,6 @@ echo ""
 echo "최신 파일:"
 while IFS= read -r type; do
   ext=$(get_ext "$type")
-  latest=$(ls -t "${OUTPUT_DIR}/${NOTEBOOK_NAME}-${type}"-*.${ext} 2>/dev/null | head -1 || true)
+  latest=$(ls -t "${OUTPUT_DIR}/${FILE_PREFIX}-${type}"-*.${ext} 2>/dev/null | head -1 || true)
   [[ -n "$latest" ]] && echo "  [$type] $latest"
 done < "$WORK/types"
