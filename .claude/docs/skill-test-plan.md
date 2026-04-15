@@ -113,9 +113,20 @@ git -C /Users/duck/Documents/Work/DuckyWorld checkout -- .
 
 ---
 
+## 진행 현황
+
+### Phase 1 완료 (2026-04-15)
+- [x] dev-work (탐색+코드추가): 뚝딱이 계획서 반환 ✅ / TaskCreate 동적 2개 ✅ / 개발-뒤적이→개발-코더 ✅
+- [x] dev-work (리팩토링): 뚝딱이 계획서 반환 ✅ / TaskCreate 동적 2개 ✅ / 개발-뒤적이→개발-리팩터 ✅
+- [x] dev-work (Systems 폴더 파악): 뚝딱이 계획서 반환 ✅ / 개발-뒤적이 ✅
+
+### Phase 2~5 미진행
+
+---
+
 ## 검증 체크리스트
 
-- [ ] dev-work: 뚝딱이가 계획서만 반환 (직접 실행 안 함)
+- [x] dev-work: 뚝딱이가 계획서만 반환 (직접 실행 안 함)
 - [ ] pm-work: PM-뒤적이 대문자 호출 정상
 - [ ] design-work: 꼼꼼이 계획서 반환 후 비서가 TaskCreate 생성
 - [ ] minigame-design: 기획서 실제 파일 수정됨
