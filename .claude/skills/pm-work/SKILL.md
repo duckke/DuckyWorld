@@ -39,7 +39,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 - Step 완료 후 → **TaskUpdate**(status: completed)
 
 담당별 호출 방법:
-- **PM-뒤적이** → Agent 툴, `subagent_type: "pm-뒤적이"`
+- **PM-뒤적이** → Agent 툴, `subagent_type: "PM-뒤적이"`
 - **깔끔이** → Agent 툴, `subagent_type: "general-purpose"`, 아래 형식으로 호출:
   ```
   /Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/leader.md 를 읽고 실행 모드로 동작할 것.
