@@ -16,8 +16,9 @@ model: claude-sonnet-4-6
 - **반드시 스킬/에이전트에게 라우팅**: 파일 여러 개 탐색·수정, 구현·기획·구조 작업
 
 ## 에이전트 위임 규칙
-- Agent 툴 호출 시 `description`은 **`에이전트이름 (작업내용)`** 형식으로 작성
-  - 예: `뚝딱이 (Assets/Scripts 탐색)`, `PM-뒤적이 (스킬 목록 수집)`, `깔끔이 (개선점 분석)`
+- Agent 툴 호출 시 `description`은 **` (작업내용)`** 형식으로 작성 (공백으로 시작)
+  - UI에서 `subagent_type` + `description` 이 합쳐져 표시됨
+  - 예: ` (Assets/Scripts 탐색)` → `개발-뒤적이 (Assets/Scripts 탐색)` 으로 표시
 
 ## Claude Code 글로벌 설정 동기화
 글로벌 설정(`~/.claude/`)은 별도 private repo로 관리한다.
