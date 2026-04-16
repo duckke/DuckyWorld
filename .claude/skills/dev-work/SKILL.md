@@ -27,7 +27,7 @@ description: Unity·C# 코드 작성, 구현, 디버깅, 리팩토링 등 개발
 ```
 
 계획서를 받으면 각 Step을 **TaskCreate**로 생성한다.
-- `subject`: "Step N: [작업내용]"
+- `subject`: "Step N: [작업내용] (에이전트명)"
 - `description`: "담당: [에이전트명]"
 - `activeForm`: "[작업 중 표시 텍스트]"
 

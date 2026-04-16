@@ -27,7 +27,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 ```
 
 계획서를 받으면 각 Step을 **TaskCreate**로 생성한다.
-- `subject`: "Step N: [작업내용]"
+- `subject`: "Step N: [작업내용] (에이전트명)"
 - `description`: "담당: [PM-뒤적이 / 깔끔이]"
 - `activeForm`: "[작업 중 표시 텍스트]"
 
