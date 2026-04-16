@@ -16,7 +16,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 ### 2. 계획 수신
 
-"깔끔이(PM팀장)에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "깔끔이"`로 호출.
+"PM-깔끔이에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "PM-깔끔이"`로 호출.
 
 ```
 계획 모드로 동작할 것.
@@ -28,7 +28,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 계획서를 받으면 각 Step을 **TaskCreate**로 생성한다.
 - `subject`: "Step N: [작업내용] (에이전트명)"
-- `description`: "담당: [PM-뒤적이 / 깔끔이]"
+- `description`: "담당: [PM-뒤적이 / PM-깔끔이]"
 - `activeForm`: "[작업 중 표시 텍스트]"
 
 ### 3. 단계별 실행
@@ -40,7 +40,7 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 담당별 호출 방법:
 - **PM-뒤적이** → Agent 툴, `subagent_type: "PM-뒤적이"`
-- **깔끔이** → Agent 툴, `subagent_type: "깔끔이"`, 아래 형식으로 호출:
+- **PM-깔끔이** → Agent 툴, `subagent_type: "PM-깔끔이"`, 아래 형식으로 호출:
   ```
   실행 모드로 동작할 것.
   실행할 단계: [단계 내용]
