@@ -41,9 +41,9 @@ Agent 툴, `subagent_type: "기획-뒤적이"`:
 
 ### Step 3. 기획 토론 세션
 
-Agent 툴, `subagent_type: "general-purpose"`:
+Agent 툴, `subagent_type: "꼼꼼이"`:
 ```
-/Users/duck/Documents/Work/DuckyWorld/.claude/agents/design/leader.md 를 읽고 실행 모드로 동작할 것.
+실행 모드로 동작할 것.
 실행할 단계: 미니게임 기획 대화 세션 (크리·로직 이중 자아 대화 모드)
 - 대상 게임: [게임명]
 - 논의 항목: [항목]
@@ -55,9 +55,9 @@ Agent 툴, `subagent_type: "general-purpose"`:
 
 토론 결과를 유저에게 보여주고 확인 요청.
 
-**승인 시** — Agent 툴, `subagent_type: "general-purpose"`:
+**승인 시** — Agent 툴, `subagent_type: "꼼꼼이"`:
 ```
-/Users/duck/Documents/Work/DuckyWorld/.claude/agents/design/leader.md 를 읽고 실행 모드로 동작할 것.
+실행 모드로 동작할 것.
 실행할 단계: 기획서 파일 업데이트
 - 대상 파일: [기획서 경로]
 - 반영할 합의안: [합의 내용]

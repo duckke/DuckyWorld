@@ -1,4 +1,5 @@
 ---
+name: 뚝딱이
 model: claude-sonnet-4-6
 description: 개발 작업 분석·계획 수립 및 코드 작성·수정 전담.
 ---

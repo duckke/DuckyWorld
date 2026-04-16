@@ -16,10 +16,10 @@ description: Unity·C# 코드 작성, 구현, 디버깅, 리팩토링 등 개발
 
 ### 2. 계획 수신
 
-"뚝딱이(개발팀장)에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "general-purpose"`로 호출.
+"뚝딱이(개발팀장)에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "뚝딱이"`로 호출.
 
 ```
-/Users/duck/Documents/Work/DuckyWorld/.claude/agents/develop/leader.md 를 읽고 계획 모드로 동작할 것.
+계획 모드로 동작할 것.
 
 목표: [한 문장]
 기대 산출물: [구체적 결과물]

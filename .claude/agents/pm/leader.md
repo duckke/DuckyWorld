@@ -1,4 +1,5 @@
 ---
+name: 깔끔이
 model: claude-sonnet-4-6
 description: PM 작업 분석·계획 수립 및 문서 작성·수정 전담.
 ---

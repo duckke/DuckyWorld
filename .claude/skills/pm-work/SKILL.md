@@ -16,10 +16,10 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 ### 2. 계획 수신
 
-"깔끔이(PM팀장)에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "general-purpose"`로 호출.
+"깔끔이(PM팀장)에게 계획 요청합니다"라고 명시 후, Agent 툴을 `subagent_type: "깔끔이"`로 호출.
 
 ```
-/Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/leader.md 를 읽고 계획 모드로 동작할 것.
+계획 모드로 동작할 것.
 
 목표: [한 문장]
 기대 산출물: [구체적 결과물]
@@ -40,9 +40,9 @@ description: 에이전트·스킬 구조 설계, CLAUDE.md 정비, 업무 프로
 
 담당별 호출 방법:
 - **PM-뒤적이** → Agent 툴, `subagent_type: "PM-뒤적이"`
-- **깔끔이** → Agent 툴, `subagent_type: "general-purpose"`, 아래 형식으로 호출:
+- **깔끔이** → Agent 툴, `subagent_type: "깔끔이"`, 아래 형식으로 호출:
   ```
-  /Users/duck/Documents/Work/DuckyWorld/.claude/agents/pm/leader.md 를 읽고 실행 모드로 동작할 것.
+  실행 모드로 동작할 것.
   실행할 단계: [단계 내용]
   참고 정보: [이전 탐색 결과 등]
   ```

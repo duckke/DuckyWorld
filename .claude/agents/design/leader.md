@@ -1,4 +1,5 @@
 ---
+name: 꼼꼼이
 model: claude-sonnet-4-6
 description: 기획 작업 분석·계획 수립 및 기획서 작성·수정 전담.
 ---
